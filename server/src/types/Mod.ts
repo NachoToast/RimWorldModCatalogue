@@ -1,3 +1,4 @@
+import { Collection } from 'mongodb';
 import { ModAuthor } from './ModAuthor';
 import { ModDLCs } from './ModDLCs';
 import { ModTags } from './ModTags';
@@ -21,3 +22,5 @@ export interface Mod {
     statsSubscribers: number;
     statsFavourites: number;
 }
+
+export type ModModel = Collection<Mod>;
