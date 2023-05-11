@@ -47,7 +47,7 @@
         },
         "mongoDbName": {
             "type": "string",
-            "default": "server_registry_default",
+            "default": "rimworld_mod_catalogue_default",
             "description": "Name of the database in MongoDB, will be created if it does not yet exist."
         }
     },
