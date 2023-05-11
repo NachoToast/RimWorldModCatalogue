@@ -13,7 +13,7 @@ defaults:
 jobs:
     production-deploy:
         name: Deploy to Production
-        if: ${{ github.repository == 'NachoToast/RimWorld-Mod-Catalogue' && github.event.workflow_run.conclusion == 'success' }}
+        if: ${{ github.repository == 'NachoToast/RimWorldModCatalogue' && github.event.workflow_run.conclusion == 'success' }}
         runs-on: ubuntu-latest
         concurrency: production_environment
         steps:
