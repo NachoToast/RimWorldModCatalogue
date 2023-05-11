@@ -1,0 +1,56 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "Links to the JSON schema (the thing generating these descriptions), don't change this!"
+        },
+        "port": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 5000,
+            "description": "Port the application will run on. Will use a random port if set to 0."
+        },
+        "clientUrls": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "examples": [["http://localhost:5000"]],
+            "default": ["*"],
+            "description": "Client origin URLs for server to use in CORS middleware.\nIn other words, websites with any of these URLs can make requests to the API without having their browser throw a security error.\nYou can use the wildcard \"*\", meaning any website."
+        },
+        "numProxies": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0,
+            "description": "Number of proxies (eg. Cloudflare, AWS ELB, NGINX) between client and server. Used for rate limiting functionality.\n For more info see https://www.npmjs.com/package/express-rate-limit#:~:text=Troubleshooting%20Proxy%20Issues"
+        },
+        "maxRequestsPerMinute": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 30,
+            "description": "Maximum number of requests a client can make to the API in a 1 minute window.\nRemember that requests with a valid \"RateLimit-Bypass-Token\" header will ignore this."
+        },
+        "rateLimitBypassTokens": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "default": [],
+            "description": "Requests with any of these in their \"RateLimit-Bypass-Token\" header will bypass rate limiting."
+        },
+        "mongoURI": {
+            "type": "string",
+            "examples": ["mongodb+srv://..."],
+            "description": "URI to connected to a MongoDB database with."
+        },
+        "mongoDbName": {
+            "type": "string",
+            "default": "server_registry_default",
+            "description": "Name of the database in MongoDB, will be created if it does not yet exist."
+        }
+    },
+    "additionalProperties": false,
+    "required": ["mongoURI"]
+}

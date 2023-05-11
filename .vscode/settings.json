@@ -1,0 +1,6 @@
+{
+    "yaml.schemas": {
+        "https://json.schemastore.org/github-workflow.json": "file:///c%3A/Users/fuzzy/Documents/Projects/RimWorld%20Mod%20Catalogue/.github/workflows/deploy.yml"
+    },
+    "git.ignoreLimitWarning": true
+}

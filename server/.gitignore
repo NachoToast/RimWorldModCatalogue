@@ -1,0 +1,15 @@
+# dependencies
+node_modules/
+
+# package managers
+package-lock.json
+yarn.lock
+
+# user generated
+build/
+coverage/
+*.log
+.vscode/settings.json
+config.json
+config.*.json
+!config.example.json

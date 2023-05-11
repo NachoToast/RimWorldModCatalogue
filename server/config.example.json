@@ -1,0 +1,5 @@
+{
+    "$schema": "./docs/config-schema.json",
+    "port": 5000,
+    "mongoURI": "mongodb+srv://..."
+}
