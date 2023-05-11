@@ -3,6 +3,7 @@ function main() {
     console.log('hello world!!');
 
     process.stdin.on('data', (d) => {
+        //
         console.log(d.toString().trim());
     });
 }

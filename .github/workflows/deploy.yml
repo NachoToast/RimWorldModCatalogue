@@ -25,6 +25,6 @@ jobs:
                   password: ${{ secrets.PASSWORD }}
                   port: ${{ secrets.PORT }}
                   script: |
-                      cd services_v2/RimWorld-Mod-Catalogue/server
+                      cd services_v2/RimWorldModCatalogue/server
                       chmod +x scripts/deploy.sh
                       ./scripts/deploy.sh
