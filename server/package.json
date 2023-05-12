@@ -10,7 +10,8 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/NachoToast/RimWorldModCatalogue.git"
+        "url": "https://github.com/NachoToast/RimWorldModCatalogue.git",
+        "directory": "server"
     },
     "scripts": {
         "start": "nodemon src/index.ts",
