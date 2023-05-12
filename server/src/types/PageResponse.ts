@@ -1,4 +1,6 @@
+import { ModId } from './Utility';
+
 export interface PageResponse {
-    ids: string[];
+    ids: ModId[];
     pageCount: number;
 }
