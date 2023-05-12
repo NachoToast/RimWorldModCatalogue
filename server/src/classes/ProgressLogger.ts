@@ -87,7 +87,13 @@ export class ProgressLogger {
         const maxKeyLength = Math.max(...errorArray.map((e) => e.key.length));
         const maxTotalLength = Math.max(...errorArray.map((e) => e.message.length)) + maxKeyLength + 10;
 
-        const errorsPerLine = Math.floor(process.stdout.getWindowSize()[0] / maxTotalLength);
+        let errorsPerLine: number;
+        try {
+            errorsPerLine = Math.floor(process.stdout.getWindowSize()[0] / maxTotalLength);
+        } catch (error) {
+            // some environments don't seem to have a process.stdout, such as pm2
+            errorsPerLine = 1;
+        }
 
         for (let i = 0, len = errorArray.length; i < len; i += errorsPerLine) {
             console.log(
