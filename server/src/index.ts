@@ -21,7 +21,7 @@ async function main() {
         updateDatabase(modService, metadataService);
     });
 
-    if ((await metadataService.getDatabaseMetadata()) === null || !false) {
+    if ((await metadataService.getDatabaseMetadata()) === null) {
         updateDatabase(modService, metadataService);
     }
 }
