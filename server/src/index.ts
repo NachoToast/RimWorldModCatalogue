@@ -14,8 +14,6 @@ async function main() {
     const modService = new ModService(modModel);
     const metadataService = new MetadataService(databaseMetadataModel);
 
-    console.log('connected :)');
-
     schedule('0 */6 * * *', () => {
         // every 6 hours
         updateDatabase(modService, metadataService);
