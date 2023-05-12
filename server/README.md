@@ -58,4 +58,6 @@ See the [installation guide](./docs/InstallationGuide.md).
 #### Dependency Reference
 
 - `axios` Makes HTTP requests to Steam web pages.
+- `mongodb` Stores mod data.
+- `node-cron` Helps with sheduling (routinely updating mod data).
 - `node-html-parser` Parses data from HTML responses.
