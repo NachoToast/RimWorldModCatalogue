@@ -5,6 +5,7 @@ import { ModAuthor } from '../types/ModAuthor';
 import { ModDLCs } from '../types/ModDLCs';
 import { ModTags } from '../types/ModTags';
 import { PageResponse } from '../types/PageResponse';
+import { ModId } from '../types/Utility';
 
 /**
  * Handles HTML parsing of workshop items into properties of the {@link Mod} object.
@@ -124,8 +125,10 @@ export class WorkshopParser {
         return WorkshopParser._parseDateString(this._detailsElements?.at(1)?.innerText ?? '').toISOString();
     }
 
-    public getUpdated(): string {
-        return WorkshopParser._parseDateString(this._detailsElements?.at(2)?.innerText ?? '').toISOString();
+    public getUpdated(): string | undefined {
+        const updatedElement = this._detailsElements?.at(2);
+        if (updatedElement === undefined) return undefined;
+        return WorkshopParser._parseDateString(updatedElement.innerText).toISOString();
     }
 
     public getVisitors(): number {
@@ -165,20 +168,20 @@ export class WorkshopParser {
      * @param {boolean} [includePageCount] Whether to include the page count in the returned object.
      */
     public static parsePage(rawData: string, includePageCount: true): PageResponse;
-    public static parsePage(rawData: string, includePageCount?: false): string[];
-    public static parsePage(rawData: string, includePageCount?: boolean): PageResponse | string[] {
+    public static parsePage(rawData: string, includePageCount?: false): ModId[];
+    public static parsePage(rawData: string, includePageCount?: boolean): PageResponse | ModId[] {
         const root = parse(rawData);
 
         const ids = root
             .querySelectorAll('.workshopItem')
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .map<string>((e) => (e.childNodes[1] as any).attributes['data-publishedfileid']);
+            .map<ModId>((e) => (e.childNodes[1] as any).attributes['data-publishedfileid']);
 
         if (!includePageCount) return ids;
 
         const pageElements = root.querySelectorAll('.pagelink');
 
-        if (pageElements.length === 0) throw new Error('No page elements found!');
+        if (pageElements.length === 0) return { ids: [], pageCount: 0 };
 
         const pageCount = parseInt(pageElements[pageElements.length - 1].innerText.replace(',', ''));
 
