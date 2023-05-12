@@ -1,4 +1,4 @@
 import { Collection } from 'mongodb';
-import { Mod } from '../types/Mod';
+import { Mod } from '../../../shared/types/Mod';
 
 export type ModModel = Collection<Mod>;

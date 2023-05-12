@@ -1,9 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import { Mod } from '../../../shared/types/Mod';
+import { ModId } from '../../../shared/types/Utility';
 import { Colours } from '../types/Colours';
 import { FetchError } from '../types/FetchError';
-import { Mod } from '../types/Mod';
 import { PageResponse } from '../types/PageResponse';
-import { ModId } from '../types/Utility';
 import { ProgressLogger } from './ProgressLogger';
 import { WorkshopParser } from './WorkshopParser';
 

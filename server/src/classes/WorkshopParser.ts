@@ -1,11 +1,11 @@
 import { parse, HTMLElement } from 'node-html-parser';
+import { ModAuthor } from '../../../shared/types/ModAuthor';
+import { ModDLCs } from '../../../shared/types/ModDLCs';
+import { ModTags } from '../../../shared/types/ModTags';
+import { ModId } from '../../../shared/types/Utility';
 import { KNOWN_DLCS } from '../constants/dlcs';
 import { TAG_KEYWORDS } from '../constants/tags';
-import { ModAuthor } from '../types/ModAuthor';
-import { ModDLCs } from '../types/ModDLCs';
-import { ModTags } from '../types/ModTags';
 import { PageResponse } from '../types/PageResponse';
-import { ModId } from '../types/Utility';
 
 /**
  * Handles HTML parsing of workshop items into properties of the {@link Mod} object.

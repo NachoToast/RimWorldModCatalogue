@@ -1,4 +1,4 @@
-import { ModId } from './Utility';
+import { ModId } from '../../../shared/types/Utility';
 
 export interface PageResponse {
     ids: ModId[];
