@@ -1,4 +1,4 @@
-import { ModDLCs } from '../../../shared/types/ModDLCs';
+import { ModDLCs } from '../types/ModDLCs';
 
 export const KNOWN_DLCS: Map<Exclude<ModDLCs, ModDLCs.None>, Lowercase<string>> = new Map([
     [ModDLCs.Royalty, 'royalty'],

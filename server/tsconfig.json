@@ -33,5 +33,5 @@
         "noFallthroughCasesInSwitch": true,
         "noImplicitOverride": true
     },
-    "include": ["src/**/*", "tests/**/*", "../shared/**/*"]
+    "include": ["src/**/*", "tests/**/*"]
 }

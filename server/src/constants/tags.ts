@@ -1,4 +1,4 @@
-import { ModTags } from '../../../shared/types/ModTags';
+import { ModTags } from '../types/ModTags';
 
 export const TAG_KEYWORDS: Map<Exclude<ModTags, ModTags.None>, Lowercase<string>[]> = new Map([
     [ModTags.Apparel, ['apparel', 'clothing', 'armor', 'armour', 'clothes']],
