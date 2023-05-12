@@ -9,5 +9,13 @@ export type ValuesOf<T> = T[keyof T];
  */
 export type ISOString = string;
 
+/**
+ * The unique identifier of a mod, this can be used to go to its Steam page:
+ * ```ts
+ * `https://steamcommunity.com/sharedfiles/filedetails/?id=${id}`
+ * ```
+ */
+export type ModId = string;
+
 /** The shape of a parsed JSON object. */
 export type JSONValue = string | number | boolean | null | { [x: string]: JSONValue } | Array<JSONValue>;
