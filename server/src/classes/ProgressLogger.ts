@@ -1,4 +1,5 @@
 import { Colours } from '../types/Colours';
+import { FetchError } from '../types/FetchError';
 
 /**
  * Handles routine logging of progress of multiple asynchronous tasks to `process.stdout`.
@@ -15,11 +16,11 @@ export class ProgressLogger {
     /** Time between log messages, in seconds. */
     private static readonly _loggingInterval: number = 250;
 
-    /** Output to log every interval, each item in this array should represent an asynchronous task. */
-    private readonly _output: string[];
-
     /** Maximum character width of the terminal. */
     private readonly _maxWidth: number = process.stdout.getWindowSize()[0];
+
+    /** Output to log every interval, each item in this array should represent an asynchronous task. */
+    private readonly _output: string[];
 
     /** Number of rows to log, this is recorded so that the correct number of rows is cleared. */
     private readonly _rows: number;
@@ -30,19 +31,13 @@ export class ProgressLogger {
     /**
      * Creates a new {@link ProgressLogger} instance.
      * @param {number} numItems The number of tasks to track.
-     * @param {string[]} [initalValues] The initial statuses of the tasks.
      */
-    public constructor(numItems: number, initalValues?: string[]) {
+    public constructor(numItems: number) {
         this._output = new Array<string>(numItems).fill('-');
         this._rows = Math.ceil(numItems / this._maxWidth);
-        this._interval = setInterval(() => this.update(), ProgressLogger._loggingInterval);
-        if (initalValues !== undefined) {
-            for (let i = 0; i < initalValues.length; i++) {
-                this._output[i] = initalValues[i];
-            }
-        }
-        console.log('');
-        this.update();
+        this._interval = setInterval(() => this.update(true), ProgressLogger._loggingInterval);
+
+        this.update(false);
     }
 
     /**
@@ -55,36 +50,39 @@ export class ProgressLogger {
     }
 
     /** Logs all task statuses to `process.stdout`, clearing the previous output. */
-    private update(): void {
-        for (let i = 0; i < this._rows; i++) {
-            process.stdout.clearLine(0);
-            process.stdout.moveCursor(0, -1);
+    private update(replace: boolean): void {
+        if (replace) {
+            for (let i = 0; i < this._rows; i++) {
+                process.stdout.clearLine(0);
+                process.stdout.moveCursor(0, -1);
+            }
         }
-        process.stdout.moveCursor(0, 1);
-        process.stdout.cursorTo(0);
-        process.stdout.write(this._output.join(''));
+        // process.stdout.moveCursor(0, 1);
+        // process.stdout.cursorTo(0);
+        console.log(this._output.join(''));
+
+        // if (final) process.stdout.write('\n');
     }
 
     /** Marks logging as finished. */
     public close(): void {
         clearInterval(this._interval);
-        this.update();
-        console.log('');
+        this.update(true);
     }
 
     /**
      * Logs an array of errors in a nice format.
-     * @param {[string, string][]} errorArray Array of error tuples, where the first item is the key and the second is
+     * @param {FetchError[]} errorArray Array of error tuples, where the first item is the key and the second is
      * the error message.
      * @param {string} title Title of the error log.
      */
-    public static logErrors(errorArray: [string, string][], title: string): void {
+    public static logErrors(errorArray: FetchError[], title: string): void {
         if (errorArray.length === 0) return;
 
         console.log(`${Colours.FgRed}${errorArray.length} Errored ${title}:${Colours.Reset}`);
 
-        const maxKeyLength = Math.max(...errorArray.map(([i]) => i.length));
-        const maxTotalLength = Math.max(...errorArray.map(([, err]) => err.length)) + maxKeyLength + 10;
+        const maxKeyLength = Math.max(...errorArray.map((e) => e.key.length));
+        const maxTotalLength = Math.max(...errorArray.map((e) => e.message.length)) + maxKeyLength + 10;
 
         const errorsPerLine = Math.floor(process.stdout.getWindowSize()[0] / maxTotalLength);
 
@@ -92,7 +90,7 @@ export class ProgressLogger {
             console.log(
                 errorArray
                     .slice(i, i + errorsPerLine)
-                    .map(([i, err]) => `${i.padStart(maxKeyLength, ' ')}: ${err}`.padEnd(maxTotalLength, ' '))
+                    .map((e) => `${e.key.padStart(maxKeyLength, ' ')}: ${e.message}`.padEnd(maxTotalLength, ' '))
                     .join('|'),
             );
         }
