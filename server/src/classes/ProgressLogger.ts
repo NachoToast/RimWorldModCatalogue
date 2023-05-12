@@ -17,7 +17,7 @@ export class ProgressLogger {
     private static readonly _loggingInterval: number = 250;
 
     /** Maximum character width of the terminal. */
-    private readonly _maxWidth: number = process.stdout.getWindowSize()[0];
+    private readonly _maxWidth: number;
 
     /** Output to log every interval, each item in this array should represent an asynchronous task. */
     private readonly _output: string[];
@@ -33,6 +33,13 @@ export class ProgressLogger {
      * @param {number} numItems The number of tasks to track.
      */
     public constructor(numItems: number) {
+        try {
+            this._maxWidth = process.stdout.getWindowSize()[0];
+        } catch (error) {
+            // some environments don't seem to have a process.stdout, such as pm2
+            this._maxWidth = -1;
+        }
+
         this._output = new Array<string>(numItems).fill('-');
         this._rows = Math.ceil(numItems / this._maxWidth);
         this._interval = setInterval(() => this.update(true), ProgressLogger._loggingInterval);
@@ -49,19 +56,15 @@ export class ProgressLogger {
         this._output[index] = value;
     }
 
-    /** Logs all task statuses to `process.stdout`, clearing the previous output. */
+    /** Logs all task statuses to `process.stdout`, clearing the previous output (if supported). */
     private update(replace: boolean): void {
-        if (replace) {
+        if (replace && this._maxWidth !== -1) {
             for (let i = 0; i < this._rows; i++) {
                 process.stdout.clearLine(0);
                 process.stdout.moveCursor(0, -1);
             }
         }
-        // process.stdout.moveCursor(0, 1);
-        // process.stdout.cursorTo(0);
         console.log(this._output.join(''));
-
-        // if (final) process.stdout.write('\n');
     }
 
     /** Marks logging as finished. */
