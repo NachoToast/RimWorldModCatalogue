@@ -48,7 +48,8 @@
         "mongoDbName": {
             "type": "string",
             "default": "rimworld_mod_catalogue_default",
-            "description": "Name of the database in MongoDB, will be created if it does not yet exist."
+            "description": "Name of the database in MongoDB, will be created if it does not yet exist.",
+            "maxLength": 38
         }
     },
     "additionalProperties": false,
