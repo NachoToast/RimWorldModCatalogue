@@ -1,4 +1,5 @@
-import { DatabaseMetadata, DatabaseMetadataModel } from '../types/DatabaseMetadata';
+import { DatabaseMetadataModel } from '../models/DatabaseMetadataModel';
+import { DatabaseMetadata } from '../types/DatabaseMetadata';
 
 /** Handles retreiving and updating database metadata. */
 export class MetadataService {

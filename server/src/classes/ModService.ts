@@ -1,5 +1,6 @@
 import { AnyBulkWriteOperation } from 'mongodb';
-import { Mod, ModModel } from '../types/Mod';
+import { ModModel } from '../models/ModModel';
+import { Mod } from '../types/Mod';
 
 /** Handles all interactions with the mods database. */
 export class ModService {

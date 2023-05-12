@@ -1,8 +1,8 @@
 import { MongoClient } from 'mongodb';
+import { DatabaseMetadataModel } from '../models/DatabaseMetadataModel';
+import { ModModel } from '../models/ModModel';
 import { Colours } from '../types/Colours';
 import { Config } from '../types/Config';
-import { DatabaseMetadataModel } from '../types/DatabaseMetadata';
-import { ModModel } from '../types/Mod';
 
 export async function loadMongo(
     config: Config,
