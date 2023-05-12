@@ -1,7 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { Colours } from '../types/Colours';
+import { FetchError } from '../types/FetchError';
 import { Mod } from '../types/Mod';
 import { PageResponse } from '../types/PageResponse';
+import { ModId } from '../types/Utility';
 import { ProgressLogger } from './ProgressLogger';
 import { WorkshopParser } from './WorkshopParser';
 
@@ -18,7 +20,7 @@ import { WorkshopParser } from './WorkshopParser';
  *
  * @example
  * ```ts
- * const fetcher = new WorkshopFetcher();
+ * const fetcher = new WorkshopFetcher(true);
  * const pageData = await fetcher.fetchNumPages();
  * const modIds = await fetcher.fetchAllPages(pageData);
  * const mods = await fetcher.fetchAllItems(modIds);
@@ -29,10 +31,10 @@ import { WorkshopParser } from './WorkshopParser';
  * const fetcher = new WorkshopFetcher(true);
  *
  * console.log('[0/3] Fetching number of pages...');
- * const initialPageData = await fetcher.fetchNumPages();
+ * const pageData = await fetcher.fetchNumPages();
  *
- * console.log(`[1/3] Fetching mod IDs from ${initialPageData.pageCount} Pages...`);
- * const modIds = await fetcher.fetchAllPages(initialPageData);
+ * console.log(`[1/3] Fetching mod IDs from ${pageData.pageCount} Pages...`);
+ * const modIds = await fetcher.fetchAllPages(pageData);
  *
  * console.log(`[2/3] Fetching data for ${modIds.length} mods...`);
  * const allMods = await fetcher.fetchAllItems(modIds);
@@ -41,14 +43,13 @@ import { WorkshopParser } from './WorkshopParser';
  * ```
  */
 export class WorkshopFetcher {
-    /**
-     * Maximum number of times to attempt certain network requests.
-     *
-     * Used in {@link fetchAllPages} and {@link fetchAllItems}.
-     */
+    private static readonly _pageUrl: string = 'https://steamcommunity.com/workshop/browse' as const;
+    private static readonly _itemUrl: string = 'https://steamcommunity.com/sharedfiles/filedetails';
+
+    /** Maximum number of times to attempt network requests. */
     private static readonly _maxAttempts: number = 3;
 
-    /** Maximum number of parallel requests, used in {@link fetchAllItems}. */
+    /** Maximum number of parallel requests. */
     private static readonly _chunkSize: number = 300;
 
     /**
@@ -61,26 +62,37 @@ export class WorkshopFetcher {
      */
     private static readonly _retryCooldownMultiplier: number = 1_000;
 
-    /** Default query parameters. */
-    private static readonly _baseFetchParams: AxiosRequestConfig['params'] = {
-        appid: 294100,
-        browsesort: 'trend',
-        section: 'readytouseitems',
-        'requiredtags[0]': 'Mod',
-        'requiredtags[1]': '1.4',
-        created_date_range_filter_start: 0,
-        created_date_range_filter_end: 0,
-        updated_date_range_filter_start: 0,
-        updated_date_range_filter_end: 0,
-        actualsort: 'trend',
-        days: -1,
-    };
+    private readonly _params: AxiosRequestConfig['params'];
 
     /** Whether to log mass network requests using a {@link ProgressLogger}. */
     private readonly _verbose: boolean;
 
-    public constructor(verbose: boolean) {
+    public constructor(verbose: boolean, previousUpdateTime?: Date) {
         this._verbose = verbose;
+
+        const startTime = previousUpdateTime ? Math.floor(previousUpdateTime.getTime() / 1_000) : 0;
+        const endTime = previousUpdateTime ? Math.floor(Date.now() / 1_000) : 0;
+
+        this._params = {
+            appid: 294100,
+            section: 'readytouseitems',
+            'requiredtags[0]': 'Mod',
+            'requiredtags[1]': '1.4',
+            created_date_range_filter_start: startTime,
+            created_date_range_filter_end: endTime,
+            updated_date_range_filter_start: startTime,
+            updated_date_range_filter_end: endTime,
+            actualsort: 'trend',
+            days: -1,
+        };
+
+        if (this._verbose && previousUpdateTime) {
+            console.log(
+                `Instantiated fetcher for all mods updated or uploaded since ${previousUpdateTime.toLocaleString(
+                    'en-NZ',
+                )}`,
+            );
+        }
     }
 
     /**
@@ -94,9 +106,9 @@ export class WorkshopFetcher {
      * {@link fetchAllPages}.
      */
     public async fetchNumPages(): Promise<PageResponse> {
-        const { data } = await axios.get<string>('https://steamcommunity.com/workshop/browse', {
+        const { data } = await axios.get<string>(WorkshopFetcher._pageUrl, {
             params: {
-                ...WorkshopFetcher._baseFetchParams,
+                ...this._params,
                 p: 1,
             },
         });
@@ -108,34 +120,26 @@ export class WorkshopFetcher {
      * Fetches the content of each page of mods on the workshop.
      * @param {PageResponse} pageResponse The response from {@link fetchNumPages}, this is required as it contains the
      * number of pages needed to be fetched, as well as the IDs of all the mods on the first page.
-     * @returns {Promise<string[]>} The mod IDs from all pages, this is required to call {@link fetchAllItems}.
+     * @returns {Promise<ModId[]>} The mod IDs from all pages, this is required to call {@link fetchAllItems}.
      */
-    public async fetchAllPages(pageResponse: PageResponse): Promise<string[]> {
+    public async fetchAllPages(pageResponse: PageResponse): Promise<ModId[]> {
         const { pageCount, ids } = pageResponse;
 
-        const logger = this._verbose
-            ? new ProgressLogger(pageCount, [`${Colours.FgGreen}x${Colours.Reset}`])
-            : undefined;
+        if (pageCount === 0) return [];
 
-        const promiseArray = new Array<Promise<string[]>>(pageCount);
-        promiseArray[0] = Promise.resolve(ids);
+        const argsArray = new Array(pageCount - 1).fill(0).map((_, i) => i + 2);
+        const keyArray = new Array(pageCount - 1).fill(0).map((_, i) => (i + 2).toString());
+        const erroredPages: FetchError[] = [];
 
-        const erroredPages: [string, string][] = [];
+        const fetchedData = await this.chunkedFetch(
+            (args) => this.fetchPageItems(args),
+            argsArray,
+            keyArray,
+            erroredPages,
+            [],
+        );
 
-        for (let i = 1; i < pageCount; i++) {
-            promiseArray[i] = new Promise<string[]>((resolve) => {
-                WorkshopFetcher.multiAttempt(WorkshopFetcher.fetchPageItems, i + 1, (msg) => logger?.log(i, msg))
-                    .then(resolve)
-                    .catch((err) => {
-                        erroredPages.push([(i + 1).toString(), WorkshopFetcher.handleError(err)]);
-                        resolve([]);
-                    });
-            });
-        }
-
-        const fetchedData = await Promise.all(promiseArray);
-
-        logger?.close();
+        fetchedData.splice(0, 0, ids);
 
         ProgressLogger.logErrors(erroredPages, 'pages');
 
@@ -143,112 +147,16 @@ export class WorkshopFetcher {
     }
 
     /**
-     * Fetches the content of each mod on the workshop.
-     * @param {string[]} ids The mod IDs from all pages, this is returned from {@link fetchAllPages}.
-     * @returns {Promise<Mod[]>} The content of each mod on the workshop.
-     */
-    public async fetchAllItems(ids: string[]): Promise<Mod[]> {
-        const modCount = ids.length;
-        const chunkCount = Math.ceil(modCount / WorkshopFetcher._chunkSize);
-
-        const outputMods: Mod[] = [];
-
-        const erroredMods: [string, string][] = [];
-
-        for (let chunk = 0; chunk < chunkCount; chunk++) {
-            const chunkIds = ids.slice(chunk * WorkshopFetcher._chunkSize, (chunk + 1) * WorkshopFetcher._chunkSize);
-            const numIds = chunkIds.length;
-
-            if (this._verbose) {
-                console.log(
-                    `Fetching chunk ${(chunk + 1)
-                        .toString()
-                        .padStart(chunkCount.toString().length, ' ')}/${chunkCount}`,
-                );
-            }
-
-            const logger = this._verbose ? new ProgressLogger(numIds) : undefined;
-
-            const promiseArray = new Array<Promise<Mod | null>>(numIds);
-
-            for (let i = 0; i < numIds; i++) {
-                const id = chunkIds[i];
-                promiseArray[i] = new Promise<Mod | null>((resolve) => {
-                    WorkshopFetcher.multiAttempt(WorkshopFetcher.fetchSingleItem, ids[i], (msg) => logger?.log(i, msg))
-                        .then(resolve)
-                        .catch((err) => {
-                            erroredMods.push([id, WorkshopFetcher.handleError(err)]);
-                            resolve(null);
-                        });
-                });
-            }
-
-            const fetchedData = await Promise.all(promiseArray);
-
-            logger?.close();
-
-            outputMods.push(...fetchedData.filter((e): e is Mod => e !== null));
-        }
-
-        ProgressLogger.logErrors(erroredMods, 'mods');
-
-        return outputMods;
-    }
-
-    /**
-     * Attempts to successfully run an asynchronous function mutliple times.
-     * @param {(args: TArgs) => Promise<TReturn>} fn The asynchronous function to run.
-     * @param {TArgs} args Arguments to pass into the function.
-     * @param {(msg: string) => void} [logFn] A function to log messages to.
-     * @returns The successful return value of the function.
-     * @throws Throws an error if the function fails after the maximum number of attempts.
-     *
-     * This is used by {@link fetchAllItems} and {@link fetchAllPages}.
-     */
-    private static async multiAttempt<TArgs, TReturn>(
-        fn: (args: TArgs) => Promise<TReturn>,
-        args: TArgs,
-        logFn?: (msg: string) => void,
-    ): Promise<TReturn> {
-        let numAttempts = 0;
-        let latestError: unknown;
-
-        while (numAttempts < WorkshopFetcher._maxAttempts) {
-            try {
-                const res = await fn(args);
-
-                logFn?.(`${Colours.FgGreen}x${Colours.Reset}`);
-
-                return res;
-            } catch (error) {
-                if (numAttempts === WorkshopFetcher._maxAttempts - 1) {
-                    logFn?.(`${Colours.FgRed}e${Colours.Reset}`);
-                    latestError = error;
-                } else {
-                    logFn?.(`${Colours.FgYellow}e${Colours.Reset}`);
-                }
-
-                numAttempts++;
-                await new Promise((resolve) =>
-                    setTimeout(resolve, WorkshopFetcher._retryCooldownMultiplier * numAttempts),
-                );
-            }
-        }
-
-        throw latestError;
-    }
-
-    /**
      * Internal helper method used by {@link fetchAllPages} to fetch an individual page.
      * @param {number} pageNumber The page number
-     * @returns {Promise<string[]>} The mod IDs on the page.
+     * @returns {Promise<ModId[]>} The mod IDs on the page.
      *
      * The page number should start at 2, since the first page is fetched by {@link fetchNumPages}.
      */
-    private static async fetchPageItems(pageNumber: number): Promise<string[]> {
-        const { data } = await axios.get<string>('https://steamcommunity.com/workshop/browse', {
+    private async fetchPageItems(pageNumber: number): Promise<ModId[]> {
+        const { data } = await axios.get<string>(WorkshopFetcher._pageUrl, {
             params: {
-                ...WorkshopFetcher._baseFetchParams,
+                ...this._params,
                 p: pageNumber,
             },
         });
@@ -257,15 +165,37 @@ export class WorkshopFetcher {
     }
 
     /**
+     * Fetches the content of each mod on the workshop.
+     * @param {ModId[]} ids The mod IDs from all pages, this is returned from {@link fetchAllPages}.
+     * @returns {Promise<Mod[]>} The content of each mod on the workshop.
+     */
+    public async fetchAllItems(ids: ModId[]): Promise<Mod[]> {
+        const itemCount = ids.length;
+
+        const argsArray = new Array(itemCount).fill(0).map((_, i) => ids[i]);
+        const keyArray = argsArray;
+        const erroredItems: FetchError[] = [];
+
+        const fetchedData = await this.chunkedFetch(
+            (args) => WorkshopFetcher.fetchSingleItem(args),
+            argsArray,
+            keyArray,
+            erroredItems,
+            null,
+        );
+
+        ProgressLogger.logErrors(erroredItems, 'items');
+
+        return fetchedData.filter((e): e is Mod => e !== null);
+    }
+
+    /**
      * Fetches a single workshop item.
-     * @param {String} id The ID of the workshop item.
-     * @returns {Promise<Mod>} A {@link Mod} object.
-     * @throws May throw an error if something goes wrong while fetching the item.
      *
      * Used internally by {@link fetchAllItems}.
      */
-    public static async fetchSingleItem(id: string): Promise<Mod> {
-        const { data } = await axios.get<string>('https://steamcommunity.com/sharedfiles/filedetails', {
+    public static async fetchSingleItem(id: ModId): Promise<Mod> {
+        const { data } = await axios.get<string>(WorkshopFetcher._itemUrl, {
             params: {
                 id,
             },
@@ -274,7 +204,7 @@ export class WorkshopFetcher {
         const parser = new WorkshopParser(data);
 
         return {
-            id,
+            _id: id,
             thumbnail: parser.getThumbnail(),
             title: parser.getTitle(),
             description: parser.getDescription(),
@@ -293,6 +223,123 @@ export class WorkshopFetcher {
         };
     }
 
+    /**
+     * Performs a large amount of asynchronous requests in chunks.
+     * @param {(args: TArgs) => Promise<TResolve>} fn The asynchronous function to call. This will be attempted
+     * {@link _maxAttempts} times (for every item in {@link argsArray}).
+     * @param {TArgs[]} argsArray Arguments to pass to each call of the function, the length of this array determines
+     * the number of calls.
+     * @param {string[]} keyArray Unique identifier for each call, used for logging errors.
+     * @param {FetchError[]} errorArray Array to store errors in.
+     * @param {TResolve} failValue The value to return if a call fails after exhausting all attempts.
+     * @returns {Promise<TResolve[]>}
+     */
+    private async chunkedFetch<TArgs, TResolve>(
+        fn: (args: TArgs) => Promise<TResolve>,
+        argsArray: TArgs[],
+        keyArray: string[],
+        errorArray: FetchError[],
+        failValue: TResolve,
+    ): Promise<TResolve[]> {
+        const itemCount = argsArray.length;
+        const chunkCount = Math.ceil(itemCount / WorkshopFetcher._chunkSize);
+
+        const output: TResolve[] = new Array(itemCount);
+
+        for (let chunk = 0; chunk < chunkCount; chunk++) {
+            const chunkStartIndex = chunk * WorkshopFetcher._chunkSize;
+            const chunkEndIndex = (chunk + 1) * WorkshopFetcher._chunkSize;
+
+            const chunkArgs = argsArray.slice(chunkStartIndex, chunkEndIndex);
+            const chunkKeys = keyArray.slice(chunkStartIndex, chunkEndIndex);
+
+            const trueChunkLength = chunkArgs.length;
+
+            let logger: ProgressLogger | undefined;
+
+            if (this._verbose) {
+                console.log(
+                    `Fetching chunk (${(chunk + 1)
+                        .toString()
+                        .padStart(chunkCount.toString().length, ' ')}/${chunkCount})`,
+                );
+                logger = new ProgressLogger(trueChunkLength);
+            }
+
+            const promiseArray = new Array<Promise<TResolve>>(trueChunkLength);
+
+            for (let i = 0; i < trueChunkLength; i++) {
+                const args = chunkArgs[i];
+                const key = chunkKeys[i];
+
+                promiseArray[i] = new Promise<TResolve>((resolve) => {
+                    WorkshopFetcher.multiAttempt(fn, args, (msg) => logger?.log(i, msg))
+                        .then(resolve)
+                        .catch((error) => {
+                            errorArray.push({
+                                key,
+                                message: WorkshopFetcher.handleError(error),
+                                error,
+                            });
+                            resolve(failValue);
+                        });
+                });
+            }
+
+            const fetchedChunkData = await Promise.all(promiseArray);
+
+            logger?.close();
+
+            for (let i = 0; i < trueChunkLength; i++) {
+                output[chunkStartIndex + i] = fetchedChunkData[i];
+            }
+        }
+
+        return output;
+    }
+
+    /**
+     * Attempts to successfully run an asynchronous function mutliple times.
+     * @param {(args: TArgs) => Promise<TReturn>} fn The asynchronous function to run.
+     * @param {TArgs} args Arguments to pass into the function.
+     * @param {(msg: string) => void} [logFn] A function to log messages with.
+     * @returns The successful return value of the function.
+     * @throws Throws an error if the function fails after the {@link _maxAttempts maximum number} of attempts.
+     */
+    private static async multiAttempt<TArgs, TReturn>(
+        fn: (args: TArgs) => Promise<TReturn>,
+        args: TArgs,
+        logFn?: (msg: string) => void,
+    ): Promise<TReturn> {
+        let numAttempts = 0;
+        let latestError: unknown;
+
+        while (numAttempts < WorkshopFetcher._maxAttempts) {
+            try {
+                const res = await fn(args);
+
+                logFn?.(`${Colours.FgGreen}x${Colours.Reset}`);
+
+                return res;
+            } catch (error) {
+                numAttempts++;
+
+                if (numAttempts === WorkshopFetcher._maxAttempts) {
+                    logFn?.(`${Colours.FgRed}e${Colours.Reset}`);
+                    latestError = error;
+                } else {
+                    logFn?.(`${Colours.FgYellow}e${Colours.Reset}`);
+                    await new Promise((resolve) =>
+                        setTimeout(resolve, WorkshopFetcher._retryCooldownMultiplier * numAttempts),
+                    );
+                }
+            }
+        }
+
+        throw latestError;
+    }
+
+    /** Nicely formats an unknown error. */
     private static handleError(err: unknown): string {
         if (axios.isAxiosError(err)) {
             if (err.response !== undefined) return `${err.response.status} (${err.response.statusText})`;
