@@ -1,5 +1,4 @@
 import { Db, MongoClient } from 'mongodb';
-import { ModModel } from '../models/ModModel';
 import { Colours } from '../types/Colours';
 import { Config } from '../types/Config';
 
@@ -14,12 +13,6 @@ export async function loadMongo(config: Config): Promise<Db> {
     const mongoClient = await new MongoClient(config.mongoURI).connect();
 
     const db = mongoClient.db(config.mongoDbName);
-
-    const modModel: ModModel = db.collection('mods');
-
-    // const databaseMetadataModel: DatabaseMetadataModel = db.collection('meta');
-
-    await modModel.createIndex({ description: 'text' });
 
     return db;
 }
