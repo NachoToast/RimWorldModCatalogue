@@ -12,7 +12,7 @@
 
     ![image](./images/MongoDB_2.png)
 
-4. Add your own, or every IP address to the network access.
+4. Add your own, or every IP address to the network access by adding 0.0.0.0 to the list. 
 
     ![image](./images/MongoDB_3.png)
 
@@ -20,11 +20,11 @@
 
     ![image](./images/MongoDB_4.png)
 
-6. Choose the "Connect your application" option.
+6. Choose the "Drivers" option in the "Connect to your application" section.
 
     ![image](./images/MongoDB_5.png)
 
-7. Now copy the URL.
+7. Now copy the URL. We can ignore step 2 as mongodb is already installed in the server.
 
     ![image](./images/MongoDB_6.png)
 
