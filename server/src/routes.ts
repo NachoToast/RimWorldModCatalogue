@@ -1,4 +1,4 @@
-import { Express, Request, Response } from 'express';
+import { Express } from 'express';
 import { MetadataService } from './classes/MetadataService';
 import { ModService } from './classes/ModService';
 import { Config } from './types/Config';
