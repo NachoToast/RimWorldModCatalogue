@@ -16,6 +16,7 @@ The live production server can be found at [https://rimworldmods.nachotoast.com]
   - [Script Reference](#script-reference)
   - [Dependency Reference](#dependency-reference)
   - [Production Build](#production-build)
+- [FAQ](#faq)
 
 ### Technologies
 
@@ -80,3 +81,11 @@ export NODE_ENV=production
 # Windows
 $env:NODE_ENV = 'production'
 ```
+
+### FAQ
+
+Trying out any operation in the [api doc](https://rimworldmods.nachotoast.com/api-docs/) returns "Failed to fetch", how do I fix this?
+
+> Make sure your server (at the top of the page) is set to `rimworldmods.nachotoast.com`, since by default it looks for your development server which might not be running.
+>
+> ![image](./docs/images/FAQ_0.png)
