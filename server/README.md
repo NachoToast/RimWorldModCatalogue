@@ -6,6 +6,8 @@
 
 The server for the RimWorld Mod Catalogue handles fetching and updating mod data from the Steam workshop, and provides an API for the client to use to query mod data.
 
+The live production server can be found at [https://rimworldmods.nachotoast.com](https://rimworldmods.nachotoast.com).
+
 ## Table of Contents <!-- omit in toc -->
 
 - [Technologies](#technologies)
