@@ -33,7 +33,9 @@ function getModel(): Collection<UpdateData> {
 }
 
 export async function getLastUpdate(): Promise<UpdateData | null> {
-    return await getModel().findOne({});
+    const lastUpdate = await getModel().findOne<UpdateData>({});
+    if (lastUpdate !== null && '_id' in lastUpdate) delete lastUpdate?._id;
+    return lastUpdate;
 }
 
 export async function setLastUpdate(newUpdate: UpdateData): Promise<void> {

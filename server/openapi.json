@@ -67,16 +67,23 @@
                                             "type": "object",
                                             "nullable": true,
                                             "properties": {
-                                                "at": {
+                                                "timestamp": {
                                                     "$ref": "#/components/schemas/ISOString"
                                                 },
-                                                "count": {
+                                                "numUpdated": {
                                                     "type": "integer",
                                                     "description": "The number of mods updated/inserted in the last update."
+                                                },
+                                                "numErrored": {
+                                                    "type": "integer",
+                                                    "description": "The number of mods that errored in the last update."
                                                 }
-                                            }
+                                            },
+                                            "additionalProperties": false,
+                                            "required": ["timestamp", "numUpdated", "numErrored"]
                                         }
                                     },
+                                    "additionalProperties": false,
                                     "required": ["startTime", "commit", "receivedRequest", "estimatedModCount"]
                                 }
                             }
