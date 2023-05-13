@@ -23,4 +23,8 @@ export class ModService {
 
         await this._model.bulkWrite(bulkUpdateOperations);
     }
+
+    public async getTotalMods(): Promise<number> {
+        return await this._model.estimatedDocumentCount();
+    }
 }
