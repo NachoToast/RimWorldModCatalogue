@@ -13,6 +13,7 @@ The server for the RimWorld Mod Catalogue handles fetching and updating mod data
 - [Documentation](#documentation)
   - [Script Reference](#script-reference)
   - [Dependency Reference](#dependency-reference)
+  - [Production Build](#production-build)
 
 ### Technologies
 
@@ -65,3 +66,15 @@ See the [installation guide](./docs/InstallationGuide.md).
 - `node-cron` Helps with sheduling (routinely updating mod data).
 - `node-html-parser` Parses data from HTML responses.
 - `swagger-ui-express` Provides a UI for viewing the OpenAPI schema (`/api-docs`).
+
+#### Production Build
+
+Remember to set the `NODE_ENV` environment variable to `production` if you want to start the API in production mode.
+
+```sh
+# Linux & Mac
+export NODE_ENV=production
+
+# Windows
+$env:NODE_ENV = 'production'
+```

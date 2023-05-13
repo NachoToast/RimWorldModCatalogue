@@ -29,4 +29,5 @@ echo "Killing old instance"
 pm2 delete $processName --silent || true 
 
 echo "Starting new instance"
+export NODE_ENV=production
 pm2 start . --name $processName --silent
