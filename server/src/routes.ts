@@ -30,4 +30,8 @@ export function applyRoutes(app: Express, config: Config, modService: ModService
                     : undefined,
         });
     });
+
+    app.get('/ip', (req, res) => {
+        res.status(200).send(req.ip);
+    });
 }
