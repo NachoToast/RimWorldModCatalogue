@@ -21,6 +21,9 @@ rm -rf build/
 echo "Building"
 pnpm build
 
+echo "Removing development dependencies"
+pnpm install --silent --frozen-lockfile --production
+
 echo "Killing old instance"
 # deletion is allowed to fail, since the process might not have been running previously
 pm2 delete $processName --silent || true 
