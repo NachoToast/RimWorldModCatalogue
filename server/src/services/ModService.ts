@@ -1,30 +1,42 @@
-import { AnyBulkWriteOperation } from 'mongodb';
-import { ModModel } from '../models/ModModel';
+/*
+ModService:
+
+This services handles all interactions with the mods database, such as:
+
+- Upserting mods.
+- Getting the total number of mods.
+- Searching mods.
+*/
+
+import { AnyBulkWriteOperation, Collection, Db } from 'mongodb';
 import { Mod } from '../types/Mod';
 
-/** Handles all interactions with the mods database. */
-export class ModService {
-    private readonly _model: ModModel;
+let model: Collection<Mod> | null = null;
 
-    public constructor(modModel: ModModel) {
-        this._model = modModel;
-    }
+export async function initializeModService(mongoDb: Db): Promise<void> {
+    model = mongoDb.collection('meta');
+    await model.createIndex({ description: 'text' });
+}
 
-    public async upsert(mods: Mod[]): Promise<void> {
-        if (mods.length === 0) return;
+function getModel(): Collection<Mod> {
+    if (model === null) throw new Error('ModService called before being initialized!');
+    return model;
+}
 
-        const bulkUpdateOperations = mods.map<AnyBulkWriteOperation<Mod>>((mod) => ({
-            updateOne: {
-                filter: { _id: mod._id },
-                update: { $set: mod },
-                upsert: true,
-            },
-        }));
+export async function getTotalModCount(): Promise<number> {
+    return await getModel().estimatedDocumentCount();
+}
 
-        await this._model.bulkWrite(bulkUpdateOperations);
-    }
+export async function upsert(mods: Mod[]): Promise<void> {
+    if (mods.length === 0) return;
 
-    public async getTotalMods(): Promise<number> {
-        return await this._model.estimatedDocumentCount();
-    }
+    const bulkUpdateOperations = mods.map<AnyBulkWriteOperation<Mod>>((mod) => ({
+        updateOne: {
+            filter: { _id: mod._id },
+            update: { $set: mod },
+            upsert: true,
+        },
+    }));
+
+    await getModel().bulkWrite(bulkUpdateOperations);
 }

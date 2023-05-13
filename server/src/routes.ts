@@ -1,9 +1,9 @@
 import { Express } from 'express';
-import { ModService } from './services/ModService';
+import { getTotalModCount } from './services/ModService';
 import { getLastUpdate } from './services/UpdateService';
 import { Config } from './types/Config';
 
-export function applyRoutes(app: Express, config: Config, modService: ModService) {
+export function applyRoutes(app: Express, config: Config) {
     app.get('/', (_req, res) => {
         res.status(200).send(
             'You found the RimWorld Mod Catalogue API!<br />Having a look around? Check out the <a href="/api-docs">API documentation</a>!',
@@ -11,7 +11,7 @@ export function applyRoutes(app: Express, config: Config, modService: ModService
     });
 
     app.post('/', async (_req, res) => {
-        const [totalMods, lastUpdate] = await Promise.all([modService.getTotalMods(), getLastUpdate()]);
+        const [totalMods, lastUpdate] = await Promise.all([getTotalModCount(), getLastUpdate()]);
 
         res.status(200).json({
             startTime: config.startedAt,

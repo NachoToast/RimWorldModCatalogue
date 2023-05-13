@@ -3,21 +3,19 @@ import { loadConfig } from './loaders/loadConfig';
 import { loadExpress } from './loaders/loadExpress';
 import { loadMongo } from './loaders/loadMongo';
 import { applyRoutes } from './routes';
-import { ModService } from './services/ModService';
+import { initializeModService } from './services/ModService';
 import { getLastUpdate, initializeUpdateService, performUpdate } from './services/UpdateService';
 import { Colours } from './types/Colours';
 import { Config } from './types/Config';
 
-// temporary code to test the build process, this is designed so the process does not exit unless a SIGTERM is passed
 async function main() {
     const config = loadConfig();
     const db = await loadMongo(config);
 
-    const modService = new ModService(db.collection('mods'));
-
     initializeUpdateService(db);
+    await initializeModService(db);
 
-    startAPI(config, modService);
+    startAPI(config);
 
     schedule('0 */6 * * *', performUpdate); // every 6 hours
 
@@ -26,10 +24,10 @@ async function main() {
     }
 }
 
-function startAPI(config: Config, modService: ModService): void {
+function startAPI(config: Config): void {
     const app = loadExpress(config);
 
-    applyRoutes(app, config, modService);
+    applyRoutes(app, config);
 
     const server = app.listen(config.port, () => {
         const _addr = server.address();
