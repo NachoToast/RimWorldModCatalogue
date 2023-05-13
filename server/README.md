@@ -62,6 +62,7 @@ See the [installation guide](./docs/InstallationGuide.md).
 #### Dependency Reference
 
 - `axios` Makes HTTP requests to Steam web pages.
+- `cors` Client origin whitelisting.
 - `express` Provides a web server.
 - `express-openapi-validator` Validates API requests and responses against an OpenAPI schema.
 - `express-rate-limit` Limits the number of requests a client can make to the server.
