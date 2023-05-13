@@ -16,7 +16,8 @@ async function main() {
 
     await startApp(app, config.port);
 
-    schedule('0 */6 * * *', performUpdate); // every 6 hours
+    // perform background update every `updateIntervalHours` hours
+    schedule(`0 */${config.updateIntervalHours} * * *`, performUpdate);
 
     if ((await getLastUpdate()) === null) {
         performUpdate();

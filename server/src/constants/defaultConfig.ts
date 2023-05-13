@@ -15,6 +15,8 @@ export const defaultConfig: Omit<Config, 'mongoURI'> = {
 
     mongoDbName: 'rimworld_mod_catalogue_default',
 
+    updateIntervalHours: 6,
+
     commit: execSync('git rev-parse HEAD').toString().trim(),
 
     startedAt: new Date().toISOString(),

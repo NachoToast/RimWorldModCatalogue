@@ -23,6 +23,8 @@ export interface Config {
 
     mongoDbName: string;
 
+    updateIntervalHours: number;
+
     // the following values should not be defined in `config.json` as they are automatically generated
     // if provided, they will be overwritten
 

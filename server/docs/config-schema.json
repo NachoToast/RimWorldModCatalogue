@@ -50,6 +50,11 @@
             "default": "rimworld_mod_catalogue_default",
             "description": "Name of the database in MongoDB, will be created if it does not yet exist.",
             "maxLength": 38
+        },
+        "updateIntervalHours": {
+            "type": "integer",
+            "description": "Time period in hours between automatic updates of the mod database.",
+            "default": 6
         }
     },
     "additionalProperties": false,
