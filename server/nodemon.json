@@ -1,5 +1,5 @@
 {
-    "watch": ["src", "scripts", "config.json"],
+    "watch": ["src", "scripts", "config.json", "openapi.json"],
     "ext": "ts",
     "ignore": ["tests/**/*"]
 }
