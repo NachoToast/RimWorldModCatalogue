@@ -1,3 +1,14 @@
+/*
+UpdateService:
+
+This service handles the background update process.
+It is designed to be run on a schedule, and will:
+
+- Fetch newly updated/created mods from the workshop.
+- Update the database with the new mods.
+- Update the database metadata with the new timestamp.
+*/
+
 import { Collection, Db } from 'mongodb';
 import { WorkshopFetcher } from '../classes/WorkshopFetcher';
 import { Colours } from '../types/Colours';
