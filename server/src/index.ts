@@ -5,6 +5,7 @@ import { WorkshopFetcher } from './classes/WorkshopFetcher';
 import { loadConfig } from './loaders/loadConfig';
 import { loadExpress } from './loaders/loadExpress';
 import { loadMongo } from './loaders/loadMongo';
+import { applyRoutes } from './routes';
 import { Colours } from './types/Colours';
 import { Config } from './types/Config';
 
@@ -13,10 +14,10 @@ async function main() {
     const config = loadConfig();
     const { modModel, databaseMetadataModel } = await loadMongo(config);
 
-    startAPI(config);
-
     const modService = new ModService(modModel);
     const metadataService = new MetadataService(databaseMetadataModel);
+
+    startAPI(config, modService, metadataService);
 
     schedule('0 */6 * * *', () => {
         // every 6 hours
@@ -28,8 +29,10 @@ async function main() {
     }
 }
 
-function startAPI(config: Config): void {
+function startAPI(config: Config, modService: ModService, metadataService: MetadataService): void {
     const app = loadExpress(config);
+
+    applyRoutes(app, config, modService, metadataService);
 
     const server = app.listen(config.port, () => {
         const _addr = server.address();

@@ -27,5 +27,99 @@
             "description": "Production Server"
         }
     ],
-    "paths": {}
+    "paths": {
+        "/": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Basic welcome message.",
+                        "content": {
+                            "text/html": {}
+                        }
+                    }
+                }
+            },
+            "post": {
+                "responses": {
+                    "200": {
+                        "description": "Basic API information.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "startTime": {
+                                            "$ref": "#/components/schemas/ISOString"
+                                        },
+                                        "commit": {
+                                            "type": "string",
+                                            "description": "The commit hash of the current build.",
+                                            "example": "cd5f368b0d5dee38b53d6fbc3248bec485887a7b"
+                                        },
+                                        "receivedRequest": {
+                                            "$ref": "#/components/schemas/ISOString"
+                                        },
+                                        "estimatedModCount": {
+                                            "type": "integer",
+                                            "description": "The estimated number of mods in the database."
+                                        },
+                                        "lastUpdate": {
+                                            "type": "object",
+                                            "nullable": true,
+                                            "properties": {
+                                                "at": {
+                                                    "$ref": "#/components/schemas/ISOString"
+                                                },
+                                                "count": {
+                                                    "type": "integer",
+                                                    "description": "The number of mods updated/inserted in the last update."
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/spec": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "OpenAPI spec.",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/api-docs": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "This document.",
+                        "content": {
+                            "text/html": {}
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ISOString": {
+                "type": "string",
+                "externalDocs": {
+                    "url": "https://en.wikipedia.org/wiki/ISO_8601",
+                    "description": "Wikipedia Page"
+                },
+                "description": "A string in ISO format, used to store dates.",
+                "example": "2023-05-13T01:39:31.199Z'"
+            }
+        }
+    }
 }
