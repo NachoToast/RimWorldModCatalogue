@@ -1,0 +1,33 @@
+import { ModDLCs } from './ModDLCs';
+import { ModSortOptions } from './ModSortOptions';
+import { ModTags } from './ModTags';
+import { PaginationParams } from './Page';
+
+/**
+ * Include operations are OR chained.
+ *
+ * Exclude operations are AND chained, and take priority over include operations.
+ *
+ * @example
+ * ```ts
+ * const dlcsInclude: ModDLCs.Royalty | ModDLCs.Biotech;
+ * const dlcsExclude: ModDLCs.Biotech;
+ * // returns mods that have the Royalty DLC, but not the Biotech DLC.
+ * ```
+ */
+export interface ModSearchOptions extends PaginationParams {
+    sortBy: ModSortOptions;
+    /** 1 = Ascending, -1 = Descending */
+    sortDirection: 1 | -1;
+    tagsInclude: ModTags;
+    tagsExclude: ModTags;
+    dlcsInclude: ModDLCs;
+    dlcsExclude: ModDLCs;
+    /**
+     * If provided, sort direction will be based on title relevance instead of the provided sort direction.
+     *
+     * - Case insensitive.
+     * - Sort direction will also be ignored.
+     */
+    search?: string;
+}
