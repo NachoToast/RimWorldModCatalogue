@@ -13,6 +13,7 @@ import { Collection, Db } from 'mongodb';
 import { WorkshopFetcher } from '../classes/WorkshopFetcher';
 import { Colours } from '../types/Colours';
 import { ISOString } from '../types/Utility';
+import { upsert } from './ModService';
 
 interface UpdateData {
     timestamp: ISOString;
@@ -61,7 +62,7 @@ export async function performUpdate(): Promise<void> {
     const allMods = await fetcher.fetchAllItems(modIds);
     console.log(`[4/5] Updating ${Colours.FgGreen}${allMods.length}${Colours.Reset} mods in the database...`);
 
-    // await modService.upsert(allMods);
+    await upsert(allMods);
     console.log('[5/5] Saving result...');
 
     await setLastUpdate({
