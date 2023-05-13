@@ -3,13 +3,17 @@ import { MetadataService } from './classes/MetadataService';
 import { ModService } from './classes/ModService';
 import { WorkshopFetcher } from './classes/WorkshopFetcher';
 import { loadConfig } from './loaders/loadConfig';
+import { loadExpress } from './loaders/loadExpress';
 import { loadMongo } from './loaders/loadMongo';
 import { Colours } from './types/Colours';
+import { Config } from './types/Config';
 
 // temporary code to test the build process, this is designed so the process does not exit unless a SIGTERM is passed
 async function main() {
     const config = loadConfig();
     const { modModel, databaseMetadataModel } = await loadMongo(config);
+
+    startAPI(config);
 
     const modService = new ModService(modModel);
     const metadataService = new MetadataService(databaseMetadataModel);
@@ -22,6 +26,26 @@ async function main() {
     if ((await metadataService.getDatabaseMetadata()) === null) {
         updateDatabase(modService, metadataService);
     }
+}
+
+function startAPI(config: Config): void {
+    const app = loadExpress(config);
+
+    const server = app.listen(config.port, () => {
+        const _addr = server.address();
+
+        let address, port;
+
+        if (typeof _addr !== 'string' && _addr !== null) {
+            address = _addr.address.replace('::', 'localhost');
+            port = _addr.port;
+        } else {
+            address = 'unknown';
+            port = config.port;
+        }
+
+        console.log(`Listening on ${Colours.FgCyan}http://${address}:${port}${Colours.Reset} (${app.get('env')})`);
+    });
 }
 
 async function updateDatabase(modService: ModService, metadataService: MetadataService): Promise<void> {

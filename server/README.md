@@ -58,6 +58,10 @@ See the [installation guide](./docs/InstallationGuide.md).
 #### Dependency Reference
 
 - `axios` Makes HTTP requests to Steam web pages.
+- `express` Provides a web server.
+- `express-openapi-validator` Validates API requests and responses against an OpenAPI schema.
+- `express-rate-limit` Limits the number of requests a client can make to the server.
 - `mongodb` Stores mod data.
 - `node-cron` Helps with sheduling (routinely updating mod data).
 - `node-html-parser` Parses data from HTML responses.
+- `swagger-ui-express` Provides a UI for viewing the OpenAPI schema (`/api-docs`).

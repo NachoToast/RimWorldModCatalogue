@@ -1,0 +1,31 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "RimWorld Mod Catalogue API",
+        "contact": {
+            "name": "GitHub Repository",
+            "url": "https://github.com/NachoToast/RimWorldModCatalogue.git"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/LICENSE"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:{port}",
+            "description": "Development Server",
+            "variables": {
+                "port": {
+                    "default": "5000"
+                }
+            }
+        },
+        {
+            "url": "https://rimworld.nachotoast.com",
+            "description": "Production Server"
+        }
+    ],
+    "paths": {}
+}
