@@ -1,11 +1,11 @@
 import { schedule } from 'node-cron';
-import { MetadataService } from './classes/MetadataService';
-import { ModService } from './classes/ModService';
 import { WorkshopFetcher } from './classes/WorkshopFetcher';
 import { loadConfig } from './loaders/loadConfig';
 import { loadExpress } from './loaders/loadExpress';
 import { loadMongo } from './loaders/loadMongo';
 import { applyRoutes } from './routes';
+import { MetadataService } from './services/MetadataService';
+import { ModService } from './services/ModService';
 import { Colours } from './types/Colours';
 import { Config } from './types/Config';
 

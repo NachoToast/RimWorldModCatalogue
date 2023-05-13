@@ -1,6 +1,6 @@
 import { Express } from 'express';
-import { MetadataService } from './classes/MetadataService';
-import { ModService } from './classes/ModService';
+import { MetadataService } from './services/MetadataService';
+import { ModService } from './services/ModService';
 import { Config } from './types/Config';
 
 export function applyRoutes(app: Express, config: Config, modService: ModService, metadataService: MetadataService) {
