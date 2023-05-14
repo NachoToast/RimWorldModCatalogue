@@ -71,7 +71,6 @@ export class WorkshopFetcher {
         this._verbose = verbose;
 
         const startTime = previousUpdateTime ? Math.floor(previousUpdateTime.getTime() / 1_000) : 0;
-        const endTime = previousUpdateTime ? Math.floor(Date.now() / 1_000) : 0;
 
         this._params = {
             appid: 294100,
@@ -79,9 +78,9 @@ export class WorkshopFetcher {
             'requiredtags[0]': 'Mod',
             'requiredtags[1]': '1.4',
             created_date_range_filter_start: startTime,
-            created_date_range_filter_end: endTime,
+            created_date_range_filter_end: 0,
             updated_date_range_filter_start: startTime,
-            updated_date_range_filter_end: endTime,
+            updated_date_range_filter_end: 0,
             actualsort: 'trend',
             days: -1,
         };
