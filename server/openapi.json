@@ -23,11 +23,87 @@
             }
         },
         {
+            "url": "http://ntgc.ddns.net:{port}",
+            "description": "Development Server (Alternate)",
+            "variables": {
+                "port": {
+                    "default": "5000"
+                }
+            }
+        },
+        {
             "url": "https://rimworldmods.nachotoast.com",
             "description": "Production Server"
         }
     ],
     "paths": {
+        "/mods": {
+            "get": {
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/perPage"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sortBy"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sortDirection"
+                    },
+                    {
+                        "$ref": "#/components/parameters/tagsInclude"
+                    },
+                    {
+                        "$ref": "#/components/parameters/tagsExclude"
+                    },
+                    {
+                        "$ref": "#/components/parameters/dlcsInclude"
+                    },
+                    {
+                        "$ref": "#/components/parameters/dlcsExclude"
+                    },
+                    {
+                        "$ref": "#/components/parameters/search"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of mods matching the search criteria.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "totalItemCount": {
+                                            "type": "integer",
+                                            "externalDocs": {
+                                                "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/Page.ts#L10-L11",
+                                                "description": "src/types/Page.ts -> WithPagination.totalItemCount"
+                                            },
+                                            "description": "Total number of relevant items across all pages."
+                                        },
+                                        "items": {
+                                            "type": "array",
+                                            "externalDocs": {
+                                                "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/Page.ts#L13",
+                                                "description": "src/types/Page.ts -> WithPagination.items"
+                                            },
+                                            "items": {
+                                                "$ref": "#/components/schemas/Mod"
+                                            }
+                                        }
+                                    },
+                                    "additionalProperties": false,
+                                    "required": ["totalItemCount", "items"]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/": {
             "get": {
                 "responses": {
@@ -137,11 +213,255 @@
             "ISOString": {
                 "type": "string",
                 "externalDocs": {
-                    "url": "https://en.wikipedia.org/wiki/ISO_8601",
-                    "description": "Wikipedia Page"
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/Utility.ts#L3-L10",
+                    "description": "src/types/Utility.ts -> ISOString"
                 },
                 "description": "A string in ISO format, used to store dates.",
                 "example": "2023-05-13T01:39:31.199Z'"
+            },
+            "ModSortOptions": {
+                "type": "integer",
+                "externalDocs": {
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/ModSortOptions.ts",
+                    "description": "src/types/ModSortOptions.ts"
+                },
+                "minimum": 0,
+                "maximum": 8
+            },
+            "ModDLCs": {
+                "type": "integer",
+                "externalDocs": {
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/ModDLCs.ts",
+                    "description": "src/types/ModDLCs.ts"
+                },
+                "minimum": 0,
+                "maximum": 7
+            },
+            "ModTags": {
+                "type": "integer",
+                "externalDocs": {
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/ModTags.ts",
+                    "description": "src/types/ModTags.ts"
+                },
+                "minimum": 0,
+                "maximum": 131071
+            },
+            "ModAuthor": {
+                "type": "object",
+                "externalDocs": {
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/ModAuthor.ts",
+                    "description": "src/types/ModAuthor.ts"
+                },
+                "description": "Represents the author of a mod.",
+                "properties": {
+                    "url": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "avatar": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "required": ["url", "name", "avatar"]
+            },
+            "ModId": {
+                "type": "string",
+                "externalDocs": {
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/Utility.ts#L12-L18",
+                    "description": "src/types/Utility.ts -> ModId"
+                },
+                "description": "The unique identifier of a mod, this can be used to go to its Steam page: `https://steamcommunity.com/sharedfiles/filedetails/?id=${id}`"
+            },
+            "Mod": {
+                "type": "object",
+                "externalDocs": {
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/Mod.ts",
+                    "description": "src/types/Mod.ts"
+                },
+                "properties": {
+                    "_id": {
+                        "$ref": "#/components/schemas/ModId"
+                    },
+                    "thumbnail": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "ratingStars": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 5
+                    },
+                    "ratingCount": {
+                        "type": "integer"
+                    },
+                    "authors": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ModAuthor"
+                        }
+                    },
+                    "tags": {
+                        "$ref": "#/components/schemas/ModTags"
+                    },
+                    "dlcs": {
+                        "$ref": "#/components/schemas/ModDLCs"
+                    },
+                    "size": {
+                        "type": "number",
+                        "description": "Size in Megabytes."
+                    },
+                    "posted": {
+                        "$ref": "#/components/schemas/ISOString"
+                    },
+                    "updated": {
+                        "$ref": "#/components/schemas/ISOString"
+                    },
+                    "catalogueLastUpdated": {
+                        "$ref": "#/components/schemas/ISOString"
+                    },
+                    "statsVisitors": {
+                        "type": "integer"
+                    },
+                    "statsSubscribers": {
+                        "type": "integer"
+                    },
+                    "statsFavourites": {
+                        "type": "integer"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "_id",
+                    "thumbnail",
+                    "title",
+                    "description",
+                    "ratingStars",
+                    "ratingCount",
+                    "authors",
+                    "tags",
+                    "dlcs",
+                    "size",
+                    "posted",
+                    "catalogueLastUpdated",
+                    "statsVisitors",
+                    "statsSubscribers",
+                    "statsFavourites"
+                ]
+            }
+        },
+        "parameters": {
+            "page": {
+                "in": "query",
+                "name": "page",
+                "required": true,
+                "schema": {
+                    "type": "integer",
+                    "externalDocs": {
+                        "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/Page.ts#L2-L3",
+                        "description": "src/types/Page.ts -> PaginationParams.page"
+                    },
+                    "description": "Page number, starts at 0.",
+                    "minimum": 0
+                },
+                "example": 0
+            },
+            "perPage": {
+                "in": "query",
+                "name": "perPage",
+                "required": true,
+                "schema": {
+                    "type": "integer",
+                    "externalDocs": {
+                        "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/Page.ts#L5C31-L6",
+                        "description": "src/types/Page.ts -> PaginationParams.perPage"
+                    },
+                    "description": "Maximum number of results to show per page.",
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                "example": 20
+            },
+            "sortBy": {
+                "in": "query",
+                "name": "sortBy",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/ModSortOptions"
+                },
+                "example": 0
+            },
+            "sortDirection": {
+                "in": "query",
+                "name": "sortDirection",
+                "required": true,
+                "schema": {
+                    "type": "integer",
+                    "externalDocs": {
+                        "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/ModSearchOptions.ts#L20-L21",
+                        "description": "src/types/ModSearchOptions.ts -> ModSearchOptions.sortDirection"
+                    },
+                    "description": "1 for ascending, -1 for descending.",
+                    "enum": [1, -1]
+                },
+                "example": 1
+            },
+            "tagsInclude": {
+                "in": "query",
+                "name": "tagsInclude",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/ModTags"
+                },
+                "example": 0
+            },
+            "tagsExclude": {
+                "in": "query",
+                "name": "tagsExclude",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/ModTags"
+                },
+                "example": 0
+            },
+            "dlcsInclude": {
+                "in": "query",
+                "name": "dlcsInclude",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/ModDLCs"
+                },
+                "example": 0
+            },
+            "dlcsExclude": {
+                "in": "query",
+                "name": "dlcsExclude",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/ModDLCs"
+                },
+                "example": 0
+            },
+            "search": {
+                "in": "query",
+                "name": "search",
+                "required": false,
+                "schema": {
+                    "type": "string",
+                    "externalDocs": {
+                        "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/ModSearchOptions.ts#L26-L32",
+                        "description": "src/types/ModSearchOptions.ts -> ModSearchOptions.search"
+                    },
+                    "maxLength": 100,
+                    "description": "If provided, sort direction will be based on title relevance instead of the provided sort direction.\n\n- Case insensitive.\n- Sort direction will also be ignored."
+                }
             }
         }
     }

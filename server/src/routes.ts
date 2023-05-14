@@ -1,7 +1,10 @@
-import { Express } from 'express';
-import { getTotalModCount } from './services/ModService';
+import { Express, Request, Response } from 'express';
+import { getTotalModCount, searchMods } from './services/ModService';
 import { getLastUpdate } from './services/UpdateService';
 import { Config } from './types/Config';
+import { Mod } from './types/Mod';
+import { ModSearchOptions } from './types/ModSearchOptions';
+import { WithPagination } from './types/Page';
 
 export function applyRoutes(app: Express, config: Config) {
     app.get('/', (_req, res) => {
@@ -25,4 +28,12 @@ export function applyRoutes(app: Express, config: Config) {
     app.get('/ip', (req, res) => {
         res.status(200).send(req.ip);
     });
+
+    app.get(
+        '/mods',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        async (req: Request<any, any, any, ModSearchOptions>, res: Response<WithPagination<Mod> | object>) => {
+            res.status(200).json(await searchMods(req.query));
+        },
+    );
 }
