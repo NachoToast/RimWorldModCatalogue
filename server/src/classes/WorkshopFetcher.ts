@@ -67,31 +67,27 @@ export class WorkshopFetcher {
     /** Whether to log mass network requests using a {@link ProgressLogger}. */
     private readonly _verbose: boolean;
 
-    public constructor(verbose: boolean, previousUpdateTime?: Date) {
+    /**
+     * Instantiates a new workshop fetcher.
+     * @param {boolean} verbose Whether to log mass network requests using a {@link ProgressLogger}.
+     * @param {number} postedSince Timestamp (in seconds) for start of 'posted date' range filter.
+     * @param {number} updatedSince Timestamp (in seconds) for start of 'date last updated' range filter.
+     */
+    public constructor(verbose: boolean = false, postedSince: number = 0, updatedSince: number = 0) {
         this._verbose = verbose;
-
-        const startTime = previousUpdateTime ? Math.floor(previousUpdateTime.getTime() / 1_000) : 0;
 
         this._params = {
             appid: 294100,
             section: 'readytouseitems',
             'requiredtags[0]': 'Mod',
             'requiredtags[1]': '1.4',
-            created_date_range_filter_start: startTime,
+            created_date_range_filter_start: postedSince,
             created_date_range_filter_end: 0,
-            updated_date_range_filter_start: startTime,
+            updated_date_range_filter_start: updatedSince,
             updated_date_range_filter_end: 0,
             actualsort: 'trend',
             days: -1,
         };
-
-        if (this._verbose && previousUpdateTime) {
-            console.log(
-                `Instantiated fetcher for all mods updated or uploaded since ${previousUpdateTime.toLocaleString(
-                    'en-NZ',
-                )}`,
-            );
-        }
     }
 
     /**
