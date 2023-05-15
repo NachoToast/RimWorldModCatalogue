@@ -211,6 +211,8 @@ export class WorkshopFetcher {
             statsVisitors: parser.getVisitors(),
             statsSubscribers: parser.getSubscribers(),
             statsFavourites: parser.getFavourites(),
+            dependencyIds: parser.getDependencyIds(),
+            dependencyNames: parser.getDependencyNames(),
         };
 
         const updated = parser.getUpdated();

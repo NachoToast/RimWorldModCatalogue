@@ -24,11 +24,15 @@ export class WorkshopParser {
     /** Contains the table data elements related to the visitors, subscribers, and favourites statistics. */
     private readonly _statsElements: HTMLElement[] | undefined;
 
+    /** Contains the anchor elements related to mod dependencies. */
+    private readonly _dependencyElements: HTMLElement[] | undefined;
+
     public constructor(rawData: string) {
         this._root = parse(rawData);
         this._ratingSection = this._root.querySelector('.ratingSection');
         this._detailsElements = this._root.querySelectorAll('.detailsStatRight');
         this._statsElements = this._root.querySelector('.stats_table')?.querySelectorAll('td');
+        this._dependencyElements = this._root.querySelector('#RequiredItems')?.querySelectorAll('a');
     }
 
     /**
@@ -149,6 +153,27 @@ export class WorkshopParser {
 
     public getFavourites(): number {
         return parseInt(this._statsElements?.at(4)?.innerText.replaceAll(',', '') ?? '0');
+    }
+
+    public getDependencyIds(): ModId[] {
+        if (this._dependencyElements === undefined) return [];
+
+        const output = [];
+
+        for (const element of this._dependencyElements) {
+            const href = element.getAttribute('href');
+            if (href === undefined) continue;
+            const url = new URL(href);
+            const id = url.searchParams.get('id');
+            if (id === null) continue;
+            output.push(id);
+        }
+
+        return output;
+    }
+
+    public getDependencyNames(): string[] {
+        return this._dependencyElements?.map((e) => e.innerText.trim()) ?? [];
     }
 
     /**

@@ -349,6 +349,18 @@
                     },
                     "statsFavourites": {
                         "type": "integer"
+                    },
+                    "dependencyIds": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ModId"
+                        }
+                    },
+                    "dependencyNames": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     }
                 },
                 "additionalProperties": false,
@@ -367,7 +379,9 @@
                     "catalogueLastUpdated",
                     "statsVisitors",
                     "statsSubscribers",
-                    "statsFavourites"
+                    "statsFavourites",
+                    "dependencyIds",
+                    "dependencyNames"
                 ]
             }
         },
