@@ -22,4 +22,6 @@ export interface Mod {
     statsVisitors: number;
     statsSubscribers: number;
     statsFavourites: number;
+    dependencyIds: ModId[];
+    dependencyNames: string[];
 }

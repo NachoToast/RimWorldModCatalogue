@@ -66,6 +66,9 @@
                     },
                     {
                         "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/dependantsOf"
                     }
                 ],
                 "responses": {
@@ -349,6 +352,18 @@
                     },
                     "statsFavourites": {
                         "type": "integer"
+                    },
+                    "dependencyIds": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ModId"
+                        }
+                    },
+                    "dependencyNames": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     }
                 },
                 "additionalProperties": false,
@@ -367,7 +382,9 @@
                     "catalogueLastUpdated",
                     "statsVisitors",
                     "statsSubscribers",
-                    "statsFavourites"
+                    "statsFavourites",
+                    "dependencyIds",
+                    "dependencyNames"
                 ]
             }
         },
@@ -475,6 +492,14 @@
                     },
                     "maxLength": 100,
                     "description": "If provided, sort direction will be based on title relevance instead of the provided sort direction.\n\n- Case insensitive.\n- Sort direction will also be ignored."
+                }
+            },
+            "dependantsOf": {
+                "in": "query",
+                "name": "dependantsOf",
+                "required": false,
+                "schema": {
+                    "$ref": "#/components/schemas/ModId"
                 }
             }
         }

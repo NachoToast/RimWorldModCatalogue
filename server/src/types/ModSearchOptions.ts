@@ -2,6 +2,7 @@ import { ModDLCs } from './ModDLCs';
 import { ModSortOptions } from './ModSortOptions';
 import { ModTags } from './ModTags';
 import { PaginationParams } from './Page';
+import { ModId } from './Utility';
 
 /**
  * Include operations are OR chained.
@@ -30,4 +31,7 @@ export interface ModSearchOptions extends PaginationParams {
      * - Sort direction will also be ignored.
      */
     search?: string;
+
+    /** Narrows results to only those that have X listed as a dependency. */
+    dependantsOf?: ModId;
 }

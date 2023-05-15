@@ -49,8 +49,18 @@ export async function upsertMods(mods: Mod[]): Promise<[inserted: number, update
 }
 
 export async function searchMods(searchOptions: ModSearchOptions): Promise<WithPagination<Mod>> {
-    const { page, perPage, sortBy, sortDirection, tagsInclude, tagsExclude, dlcsInclude, dlcsExclude, search } =
-        searchOptions;
+    const {
+        page,
+        perPage,
+        sortBy,
+        sortDirection,
+        tagsInclude,
+        tagsExclude,
+        dlcsInclude,
+        dlcsExclude,
+        search,
+        dependantsOf,
+    } = searchOptions;
 
     const dlcFilter: Condition<ModDLCs> = { $bitsAllClear: dlcsExclude };
     if (dlcsInclude) dlcFilter.$bitsAnySet = dlcsInclude;
@@ -65,6 +75,10 @@ export async function searchMods(searchOptions: ModSearchOptions): Promise<WithP
     if (search !== undefined) {
         filter.$text = { $search: search };
         sort.score = { $meta: 'textScore' };
+    }
+
+    if (dependantsOf !== undefined) {
+        filter.dependencyIds = { $elemMatch: { $eq: dependantsOf } };
     }
 
     switch (sortBy) {
