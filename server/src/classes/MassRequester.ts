@@ -18,7 +18,7 @@ interface FetchError {
     error: unknown;
 }
 
-/** Handles making large amount of asynchronous function calls in chunks. */
+/** Handles making large amounts of asynchronous function calls in chunks. */
 export class MassRequester {
     /** Whether to log status updates using a {@link ProgressLogger}. */
     private readonly _loggingEnabled: boolean;
