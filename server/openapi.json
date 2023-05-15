@@ -66,6 +66,9 @@
                     },
                     {
                         "$ref": "#/components/parameters/search"
+                    },
+                    {
+                        "$ref": "#/components/parameters/dependantsOf"
                     }
                 ],
                 "responses": {
@@ -489,6 +492,14 @@
                     },
                     "maxLength": 100,
                     "description": "If provided, sort direction will be based on title relevance instead of the provided sort direction.\n\n- Case insensitive.\n- Sort direction will also be ignored."
+                }
+            },
+            "dependantsOf": {
+                "in": "query",
+                "name": "dependantsOf",
+                "required": false,
+                "schema": {
+                    "$ref": "#/components/schemas/ModId"
                 }
             }
         }
