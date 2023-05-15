@@ -205,7 +205,7 @@ export class MassRequester {
      * Attempts to successfully run an asynchronous function, retrying on failure.
      * @param {(args: TArgs) => Promise<TReturn>} fn The asynchronous function to run.
      * @param {TArgs} args Arguments to pass into the function.
-     * @param {(status: ProgressLoggerStatuses) => void} [logFn] A function to log status updates with.
+     * @param {(msg: string) => void} [logFn] A function to log status updates with.
      * @returns The successful return value of the function.
      * @throws Throws an error if the function fails after the {@link _maxAttempts maximum number} of retries.
      */
@@ -255,6 +255,7 @@ export class MassRequester {
         }
     }
 
+    /** Helper method for {@link logErrors}. */
     private static makeErrorMessage(err: unknown): string {
         if (axios.isAxiosError(err)) {
             if (err.response !== undefined) return `${err.response.status} (${err.response.statusText})`;
