@@ -146,17 +146,31 @@
                                                 "timestamp": {
                                                     "$ref": "#/components/schemas/ISOString"
                                                 },
+                                                "numInserted": {
+                                                    "type": "integer",
+                                                    "description": "The number of mods inserted in the last update."
+                                                },
                                                 "numUpdated": {
                                                     "type": "integer",
-                                                    "description": "The number of mods updated/inserted in the last update."
+                                                    "description": "The number of mods updated in the last update."
                                                 },
                                                 "numErrored": {
                                                     "type": "integer",
                                                     "description": "The number of mods that errored in the last update."
+                                                },
+                                                "numSkipped": {
+                                                    "type": "integer",
+                                                    "description": "The number of mods that were skipped over in the last update."
                                                 }
                                             },
                                             "additionalProperties": false,
-                                            "required": ["timestamp", "numUpdated", "numErrored"]
+                                            "required": [
+                                                "timestamp",
+                                                "numInserted",
+                                                "numUpdated",
+                                                "numErrored",
+                                                "numSkipped"
+                                            ]
                                         }
                                     },
                                     "additionalProperties": false,
