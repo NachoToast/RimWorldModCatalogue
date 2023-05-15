@@ -15,6 +15,7 @@ import { ModSearchOptions } from '../types/ModSearchOptions';
 import { ModSortOptions } from '../types/ModSortOptions';
 import { ModTags } from '../types/ModTags';
 import { WithPagination } from '../types/Page';
+import { ModId } from '../types/Utility';
 
 let model: Collection<Mod> | null = null;
 
@@ -46,6 +47,10 @@ export async function upsertMods(mods: Mod[]): Promise<[inserted: number, update
     const bulkWriteResult = await getModel().bulkWrite(bulkUpdateOperations);
 
     return [bulkWriteResult.upsertedCount, bulkWriteResult.modifiedCount];
+}
+
+export async function getMod(id: ModId): Promise<Mod | null> {
+    return await getModel().findOne({ _id: id });
 }
 
 export async function searchMods(searchOptions: ModSearchOptions): Promise<WithPagination<Mod>> {

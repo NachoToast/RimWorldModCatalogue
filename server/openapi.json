@@ -107,6 +107,35 @@
                 }
             }
         },
+        "/mods/{id}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "$ref": "#/components/schemas/ModId"
+                    }
+                }
+            ],
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "The mod with the given ID.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Mod"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "The mod with the given ID does not exist."
+                    }
+                }
+            }
+        },
         "/": {
             "get": {
                 "responses": {

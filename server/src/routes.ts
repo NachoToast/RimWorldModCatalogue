@@ -1,5 +1,5 @@
 import { Express, Request, Response } from 'express';
-import { getTotalModCount, searchMods } from './services/ModService';
+import { getMod, getTotalModCount, searchMods } from './services/ModService';
 import { getLastUpdate } from './services/UpdateService';
 import { Config } from './types/Config';
 import { Mod } from './types/Mod';
@@ -36,4 +36,10 @@ export function applyRoutes(app: Express, config: Config) {
             res.status(200).json(await searchMods(req.query));
         },
     );
+
+    app.get('/mods/:id', async (req, res: Response<Mod>) => {
+        const mod = await getMod(req.params.id);
+        if (mod === null) res.sendStatus(404);
+        else res.status(200).send(mod);
+    });
 }
