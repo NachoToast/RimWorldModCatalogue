@@ -15,7 +15,7 @@ import { WorkshopFetcher } from '../classes/WorkshopFetcher';
 import { Colours } from '../types/Colours';
 import { Mod } from '../types/Mod';
 import { ISOString } from '../types/Utility';
-import { upsert } from './ModService';
+import { upsertMods } from './ModService';
 
 interface UpdateData {
     timestamp: ISOString;
@@ -46,26 +46,29 @@ export async function setLastUpdate(newUpdate: UpdateData): Promise<void> {
     await getModel().updateOne({}, { $set: newUpdate }, { upsert: true });
 }
 
+/** Performs a first-time fetch to populate the database with ALL mods on the workshop. */
 async function performInitialWorkshopFetch(): Promise<void> {
     const updateStartTime = new Date();
 
     console.log('Initial mod fetch starting, please do not exit the process');
     const fetcher = new WorkshopFetcher(true);
 
+    // fetch number of pages
     console.log(`[1/5] Fetching ${Colours.FgCyan}number of pages${Colours.Reset}...`);
     const pageCount = await fetcher.fetchNumPages();
 
+    // fetch mod ids from each page
     console.log(
         `[2/5] Fetching ${Colours.FgMagenta}mod IDs${Colours.Reset} from ${Colours.FgCyan}${pageCount}${Colours.Reset} pages...`,
     );
     const pageEmitter = await fetcher.fetchAllPages(pageCount);
 
-    let pagesReceived = 0;
+    let numPagesReceived = 0;
 
     const modIds: string[] = [];
 
     pageEmitter.on('chunk', (pageChunk) => {
-        pagesReceived += pageChunk.length;
+        numPagesReceived += pageChunk.length;
         modIds.push(...pageChunk.flat());
     });
 
@@ -76,19 +79,22 @@ async function performInitialWorkshopFetch(): Promise<void> {
         });
     });
 
+    // fetch mod data from each id
     console.log(
-        `[3/5] Fetching ${Colours.FgGreen}mod data${Colours.Reset} for ${Colours.FgMagenta}${modIds.length}${Colours.Reset} mod IDs across ${Colours.FgCyan}${pagesReceived}${Colours.Reset} pages...`,
+        `[3/5] Fetching ${Colours.FgGreen}mod data${Colours.Reset} for ${Colours.FgMagenta}${modIds.length}${Colours.Reset} mod IDs across ${Colours.FgCyan}${numPagesReceived}${Colours.Reset} pages...`,
     );
 
     let modsErrored = 0;
     let modsSkipped = 0;
+
     const upsertPromises: Promise<[inserted: number, updated: number]>[] = [];
 
     const modEmitter = await fetcher.fetchAllMods(modIds.flat());
 
+    // upsert each mod as each chunk is received
     modEmitter.on('chunk', (modChunk) => {
         const trueModChunk = modChunk.filter((mod): mod is Mod => mod !== null);
-        upsertPromises.push(upsert(trueModChunk));
+        upsertPromises.push(upsertMods(trueModChunk));
         modsSkipped += modChunk.length - trueModChunk.length;
     });
 
@@ -101,11 +107,15 @@ async function performInitialWorkshopFetch(): Promise<void> {
     });
 
     console.log(`[4/5] Updating database (${upsertPromises.length} operations)...`);
+
+    // most upserts should have already completed by this point
+    // sum up the number of inserted and updated mods
     const [inserted, updated] = (await Promise.all(upsertPromises)).reduce(
         (a, b) => [a[0] + b[0], a[1] + b[1]],
         [0, 0],
     );
 
+    // save stats to last update
     console.log(
         `[5/5] Saving results (${Colours.FgGreen}inserted${Colours.Reset} = ${inserted}, ${Colours.FgMagenta}updated${Colours.Reset} = ${updated}, ${Colours.FgRed}errored${Colours.Reset} = ${modsErrored}, ${Colours.FgYellow}skipped${Colours.Reset} = ${modsSkipped})...`,
     );
@@ -124,6 +134,7 @@ async function performInitialWorkshopFetch(): Promise<void> {
     );
 }
 
+/** Performs a background fetch to get new/updated mods on the workshop */
 async function performBackgroundWorkshopFetch(timestamp: number, mode: 'posted' | 'updated'): Promise<UpdateData> {
     const updateStartTime = new Date();
 
@@ -132,6 +143,7 @@ async function performBackgroundWorkshopFetch(timestamp: number, mode: 'posted' 
             Colours.Reset
         } mods`,
     );
+    // timestamps are AND chained by Steam, so can only have 1 non-zero
     const fetcher = new WorkshopFetcher(false, mode === 'posted' ? timestamp : 0, mode === 'updated' ? timestamp : 0);
 
     let modsErrored = 0;
@@ -140,9 +152,10 @@ async function performBackgroundWorkshopFetch(timestamp: number, mode: 'posted' 
 
     const modEmitter = await fetcher.fetchAllMods();
 
+    // upsert each mod as each chunk is received
     modEmitter.on('chunk', (modChunk) => {
         const trueModChunk = modChunk.filter((mod): mod is Mod => mod !== null);
-        upsertPromises.push(upsert(trueModChunk));
+        upsertPromises.push(upsertMods(trueModChunk));
         modsSkipped += modChunk.length - trueModChunk.length;
     });
 
@@ -154,6 +167,8 @@ async function performBackgroundWorkshopFetch(timestamp: number, mode: 'posted' 
         });
     });
 
+    // most upserts should have already completed by this point
+    // sum up the number of inserted and updated mods
     const [inserted, updated] = (await Promise.all(upsertPromises)).reduce(
         (a, b) => [a[0] + b[0], a[1] + b[1]],
         [0, 0],
@@ -171,6 +186,7 @@ async function performBackgroundWorkshopFetch(timestamp: number, mode: 'posted' 
         }skipped${Colours.Reset} = ${modsSkipped})`,
     );
 
+    // return stats instead of saving
     return {
         timestamp: updateStartTime.toISOString(),
         numInserted: inserted,
@@ -197,6 +213,7 @@ export async function performUpdate(): Promise<void> {
         performBackgroundWorkshopFetch(timestamp, 'updated'),
     ]);
 
+    // choose lower (older) timestamp, and sum up the rest
     await setLastUpdate({
         timestamp:
             updateResponses[0].timestamp <= updateResponses[1].timestamp
