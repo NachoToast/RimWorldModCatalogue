@@ -17,26 +17,60 @@ import { WorkshopParser } from './WorkshopParser';
  *
  * @example
  * ```ts
- * const fetcher = new WorkshopFetcher(true);
- * const pageData = await fetcher.fetchNumPages();
- * const modIds = await fetcher.fetchAllPages(pageData);
- * const mods = await fetcher.fetchAllItems(modIds);
+// fetching all mods
+const fetcher = new WorkshopFetcher();
+const modEmitter = await fetcher.fetchAllMods();
+modEmitter.on('chunk', (mods) => {
+    console.log(`Fetched ${mods.length} mods!`)
+});
+modEmitter.on('done', (errors) => {
+    console.log(`Finished fetching mods`);
+    console.log(errors);
+})
  * ```
  *
  * @example
  * ```ts
- * const fetcher = new WorkshopFetcher(true);
- *
- * console.log('[0/3] Fetching number of pages...');
- * const pageData = await fetcher.fetchNumPages();
- *
- * console.log(`[1/3] Fetching mod IDs from ${pageData.pageCount} Pages...`);
- * const modIds = await fetcher.fetchAllPages(pageData);
- *
- * console.log(`[2/3] Fetching data for ${modIds.length} mods...`);
- * const allMods = await fetcher.fetchAllItems(modIds);
- *
- * console.log(`[3/3] Done! Fetched ${allMods.length} mods`);
+// if you want more control over each step of the fetch process
+const fetcher = new WorkshopFetcher(true);
+
+console.log('[1/5] Fetching number of pages...');
+const pageCount = await fetcher.fetchNumPages();
+
+console.log(`[2/5] Fetching mod IDs from ${pageCount} pages...`);
+const pageEmitter = await fetcher.fetchAllPages(pageCount);
+
+let pagesReceived = 0;
+const modIds: string[] = [];
+
+pageEmitter.on('chunk', (pageChunk) => {
+    pagesReceived += pageChunk.length;
+    modIds.push(...pageChunk.flat());
+});
+
+await new Promise<void>((resolve) => {
+    pageEmitter.on('done', (errors) => {
+        MassRequester.logErrors(errors, 'pages');
+        resolve();
+    });
+});
+
+console.log(`[3/5] Fetching mod data for ${modIds.length} mod IDs across ${pagesReceived} pages...`);
+
+let modsSkipped = 0;
+
+const modEmitter = await fetcher.fetchAllMods(modIds.flat());
+
+modEmitter.on('chunk', (modChunk) => {
+    const trueModChunk = modChunk.filter((mod): mod is Mod => mod !== null);
+    // do something with the mods here
+    modsSkipped += modChunk.length - trueModChunk.length;
+});
+
+modEmitter.on('done', (errors) => {
+    console.log(`Done, ${modsSkipped} mods were skipped`)
+    MassRequester.logErrors(errors, 'mods');
+});
  * ```
  */
 export class WorkshopFetcher {
@@ -111,6 +145,8 @@ export class WorkshopFetcher {
      * Fetches an array of mods.
      * @param {ModId[]} ids Array of mod IDs to fetch the content of.
      * @returns {Promise<ChunkEmitter<Mod | null>>} A chunk emitter, each chunk contains an array of mods.
+     *
+     * A mod can be `null` if it is not publically visible (e.g. due to to explicit content tags).
      */
     public async fetchAllMods(ids?: ModId[]): Promise<ChunkEmitter<Mod | null>> {
         ids ??= (await MassRequester.collectAllFromEmitter(await this.fetchAllPages())).flat();
@@ -143,7 +179,11 @@ export class WorkshopFetcher {
         return WorkshopParser.parsePageMods(data);
     }
 
-    /** Fetches a single workshop item. */
+    /**
+     * Fetches a single workshop item.
+     *
+     * May return `null` for mods that are not publically visible (e.g. due to explicit content tags).
+     */
     public static async fetchMod(id: ModId): Promise<Mod | null> {
         const { data } = await axios.get<string>(WorkshopFetcher._itemUrl, {
             params: {
