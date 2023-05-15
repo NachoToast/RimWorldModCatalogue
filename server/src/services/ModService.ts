@@ -32,8 +32,8 @@ export async function getTotalModCount(): Promise<number> {
     return await getModel().estimatedDocumentCount();
 }
 
-export async function upsert(mods: Mod[]): Promise<void> {
-    if (mods.length === 0) return;
+export async function upsert(mods: Mod[]): Promise<[inserted: number, updated: number]> {
+    if (mods.length === 0) return [0, 0];
 
     const bulkUpdateOperations = mods.map<AnyBulkWriteOperation<Mod>>((mod) => ({
         updateOne: {
@@ -43,7 +43,9 @@ export async function upsert(mods: Mod[]): Promise<void> {
         },
     }));
 
-    await getModel().bulkWrite(bulkUpdateOperations);
+    const bulkWriteResult = await getModel().bulkWrite(bulkUpdateOperations);
+
+    return [bulkWriteResult.upsertedCount, bulkWriteResult.modifiedCount];
 }
 
 export async function searchMods(searchOptions: ModSearchOptions): Promise<WithPagination<Mod>> {
