@@ -32,7 +32,7 @@ export async function getTotalModCount(): Promise<number> {
     return await getModel().estimatedDocumentCount();
 }
 
-export async function upsert(mods: Mod[]): Promise<[inserted: number, updated: number]> {
+export async function upsertMods(mods: Mod[]): Promise<[inserted: number, updated: number]> {
     if (mods.length === 0) return [0, 0];
 
     const bulkUpdateOperations = mods.map<AnyBulkWriteOperation<Mod>>((mod) => ({
