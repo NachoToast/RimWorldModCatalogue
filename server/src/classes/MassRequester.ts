@@ -3,7 +3,7 @@ import { TypedEmitter } from 'tiny-typed-emitter';
 import { Colours } from '../types/Colours';
 import { ProgressLogger } from './ProgressLogger';
 
-export interface ChunkEmitterEvents<T> {
+interface ChunkEmitterEvents<T> {
     /** Emitted data when a chunk has been fetched. */
     chunk: (data: T[]) => void;
 
@@ -13,7 +13,7 @@ export interface ChunkEmitterEvents<T> {
 
 export type ChunkEmitter<T> = TypedEmitter<ChunkEmitterEvents<T>>;
 
-export interface FetchError {
+interface FetchError {
     key: string;
     error: unknown;
 }
