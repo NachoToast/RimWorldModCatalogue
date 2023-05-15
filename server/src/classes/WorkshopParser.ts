@@ -65,7 +65,7 @@ export class WorkshopParser {
         - unknown stars https://community.akamai.steamstatic.com/public/images/sharedfiles/not-yet_large.png?v=2 
         */
         const ratingStarsString = this._ratingSection?.querySelector('img')?.getAttribute('src') ?? '';
-        // extract star count via capture group in RegExp
+        // extract star count via capture group in RegExp (ty @pumbas600)
         return parseInt(/([0-5])-star/i.exec(ratingStarsString)?.at(1) ?? '0');
     }
 
@@ -171,9 +171,8 @@ export class WorkshopParser {
     }
 
     /**
-     * Gets the page count and contained item IDs from a page.
+     * Gets the contained item IDs from a page.
      * @param {string} rawData The raw HTML data of the page.
-     * @param {boolean} [includePageCount] Whether to include the page count in the returned object.
      */
     public static parsePageMods(rawData: string): ModId[] {
         const root = parse(rawData);
@@ -186,6 +185,10 @@ export class WorkshopParser {
         return ids;
     }
 
+    /**
+     * Gets the page count from a page.
+     * @param {stirng} rawData The raw HTML data of the page.
+     */
     public static parsePageCount(rawData: string): number {
         const root = parse(rawData);
 
