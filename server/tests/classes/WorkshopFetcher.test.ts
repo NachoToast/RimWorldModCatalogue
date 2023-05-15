@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { WorkshopFetcher } from '../../src/classes/WorkshopFetcher';
 import { WorkshopParser } from '../../src/classes/WorkshopParser';
-import { PageResponse } from '../../src/types/PageResponse';
 
 jest.mock('axios');
 jest.mock('../../src/classes/WorkshopParser');
@@ -12,7 +11,6 @@ const mockedWorkshopParser = jest.mocked(WorkshopParser);
 describe(WorkshopFetcher.name, () => {
     describe(WorkshopFetcher.prototype.fetchNumPages.name, () => {
         const data = 'fake data';
-        const response: PageResponse = { ids: [], pageCount: 123 };
 
         afterAll(() => {
             jest.clearAllMocks();
@@ -20,7 +18,7 @@ describe(WorkshopFetcher.name, () => {
 
         beforeAll(async () => {
             mockedAxios.get.mockResolvedValueOnce({ data });
-            mockedWorkshopParser.parsePage.mockReturnValueOnce(response as unknown as string[]);
+            mockedWorkshopParser.parsePageCount.mockReturnValueOnce(123);
 
             await new WorkshopFetcher(false).fetchNumPages();
         });
@@ -34,12 +32,12 @@ describe(WorkshopFetcher.name, () => {
         });
 
         it('parses the response', () => {
-            expect(mockedWorkshopParser.parsePage).toBeCalledTimes(1);
-            expect(mockedWorkshopParser.parsePage).toBeCalledWith(data, true);
+            expect(mockedWorkshopParser.parsePageCount).toBeCalledTimes(1);
+            expect(mockedWorkshopParser.parsePageCount).toBeCalledWith(data);
         });
     });
 
-    describe(WorkshopFetcher.fetchSingleItem.name, () => {
+    describe(WorkshopFetcher.fetchMod.name, () => {
         const id = 'fake id';
         const data = 'fake data';
 
@@ -50,7 +48,7 @@ describe(WorkshopFetcher.name, () => {
         beforeAll(async () => {
             mockedAxios.get.mockResolvedValueOnce({ data });
 
-            await WorkshopFetcher.fetchSingleItem(id);
+            await WorkshopFetcher.fetchMod(id);
         });
 
         it('makes a network request', () => {
@@ -63,6 +61,8 @@ describe(WorkshopFetcher.name, () => {
 
         it('parses the response', () => {
             expect(mockedWorkshopParser).toBeCalledTimes(1);
+
+            // all non-static WorkshopParser methods should be called
             for (const method of Object.keys(mockedWorkshopParser.prototype)) {
                 expect(mockedWorkshopParser.prototype[method as keyof WorkshopParser]).toBeCalledTimes(1);
             }

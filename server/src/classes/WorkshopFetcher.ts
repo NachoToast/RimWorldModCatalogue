@@ -1,80 +1,96 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { Colours } from '../types/Colours';
-import { FetchError } from '../types/FetchError';
 import { Mod } from '../types/Mod';
-import { PageResponse } from '../types/PageResponse';
 import { ModId } from '../types/Utility';
-import { ProgressLogger } from './ProgressLogger';
+import { ChunkEmitter, MassRequester } from './MassRequester';
 import { WorkshopParser } from './WorkshopParser';
 
 /**
  * Handles fetching of workshop items from the Steam Workshop.
  *
- * The static {@link fetchSingleItem} method can be used to fetch a single workshop item.
+ * The static {@link fetchMod} method can be used to fetch a single workshop item.
  *
  * The basic lifecycle of a fetcher is:
  * 1. Instantiation
  * 2. {@link fetchNumPages Fetching number of pages}.
  * 3. {@link fetchAllPages Fetching all page data}.
- * 4. {@link fetchAllItems Fetching all item data}.
+ * 4. {@link fetchAllMods Fetching all item data}.
  *
  * @example
  * ```ts
- * const fetcher = new WorkshopFetcher(true);
- * const pageData = await fetcher.fetchNumPages();
- * const modIds = await fetcher.fetchAllPages(pageData);
- * const mods = await fetcher.fetchAllItems(modIds);
+// fetching all mods
+const fetcher = new WorkshopFetcher();
+const modEmitter = await fetcher.fetchAllMods();
+modEmitter.on('chunk', (mods) => {
+    console.log(`Fetched ${mods.length} mods!`)
+});
+modEmitter.on('done', (errors) => {
+    console.log(`Finished fetching mods`);
+    console.log(errors);
+})
  * ```
  *
  * @example
  * ```ts
- * const fetcher = new WorkshopFetcher(true);
- *
- * console.log('[0/3] Fetching number of pages...');
- * const pageData = await fetcher.fetchNumPages();
- *
- * console.log(`[1/3] Fetching mod IDs from ${pageData.pageCount} Pages...`);
- * const modIds = await fetcher.fetchAllPages(pageData);
- *
- * console.log(`[2/3] Fetching data for ${modIds.length} mods...`);
- * const allMods = await fetcher.fetchAllItems(modIds);
- *
- * console.log(`[3/3] Done! Fetched ${allMods.length} mods`);
+// if you want more control over each step of the fetch process
+const fetcher = new WorkshopFetcher(true);
+
+console.log('[1/5] Fetching number of pages...');
+const pageCount = await fetcher.fetchNumPages();
+
+console.log(`[2/5] Fetching mod IDs from ${pageCount} pages...`);
+const pageEmitter = await fetcher.fetchAllPages(pageCount);
+
+let pagesReceived = 0;
+const modIds: string[] = [];
+
+pageEmitter.on('chunk', (pageChunk) => {
+    pagesReceived += pageChunk.length;
+    modIds.push(...pageChunk.flat());
+});
+
+await new Promise<void>((resolve) => {
+    pageEmitter.on('done', (errors) => {
+        MassRequester.logErrors(errors, 'pages');
+        resolve();
+    });
+});
+
+console.log(`[3/5] Fetching mod data for ${modIds.length} mod IDs across ${pagesReceived} pages...`);
+
+let modsSkipped = 0;
+
+const modEmitter = await fetcher.fetchAllMods(modIds.flat());
+
+modEmitter.on('chunk', (modChunk) => {
+    const trueModChunk = modChunk.filter((mod): mod is Mod => mod !== null);
+    // do something with the mods here
+    modsSkipped += modChunk.length - trueModChunk.length;
+});
+
+modEmitter.on('done', (errors) => {
+    console.log(`Done, ${modsSkipped} mods were skipped`)
+    MassRequester.logErrors(errors, 'mods');
+});
  * ```
  */
 export class WorkshopFetcher {
-    private static readonly _pageUrl: string = 'https://steamcommunity.com/workshop/browse' as const;
+    private static readonly _pageUrl: string = 'https://steamcommunity.com/workshop/browse';
     private static readonly _itemUrl: string = 'https://steamcommunity.com/sharedfiles/filedetails';
 
-    /** Maximum number of times to attempt network requests. */
-    private static readonly _maxAttempts: number = 3;
+    /** Requester for making mass network requests to. */
+    private readonly _massRequester: MassRequester;
 
-    /** Maximum number of parallel requests. */
-    private static readonly _chunkSize: number = 300;
-
-    /**
-     * If a request fails, how long to wait before retrying, in milliseconds.
-     *
-     * This number is multiplied by the attempt number.
-     *
-     * For example, a value of 1000 (1 second) will result in a 1 second delay between the first and second attempts, a
-     * 2 second delay between the second and third attempts, and so on...
-     */
-    private static readonly _retryCooldownMultiplier: number = 1_000;
-
+    /** Query parameters to send with network requests. */
     private readonly _params: AxiosRequestConfig['params'];
 
-    /** Whether to log mass network requests using a {@link ProgressLogger}. */
-    private readonly _verbose: boolean;
-
     /**
-     * Instantiates a new workshop fetcher.
-     * @param {boolean} verbose Whether to log mass network requests using a {@link ProgressLogger}.
+     * Creates a new {@link WorkshopFetcher} instance.
+     * @param {boolean} loggingEnabled Whether to log mass network requests.
      * @param {number} postedSince Timestamp (in seconds) for start of 'posted date' range filter.
      * @param {number} updatedSince Timestamp (in seconds) for start of 'date last updated' range filter.
      */
-    public constructor(verbose: boolean = false, postedSince: number = 0, updatedSince: number = 0) {
-        this._verbose = verbose;
+    public constructor(loggingEnabled: boolean = false, postedSince: number = 0, updatedSince: number = 0) {
+        this._massRequester = new MassRequester(loggingEnabled, 300, 3, 1_000, 100);
 
         this._params = {
             appid: 294100,
@@ -94,13 +110,8 @@ export class WorkshopFetcher {
      * Fetches the number of pages of mods on the workshop.
      *
      * This is done by fetching the first page and seeing what the maximum page number on it is.
-     *
-     * Since this fetches the first page, it also fetches the mod IDs on that page.
-     *
-     * @returns {Promise<PageResponse>} The response from the first page, this is required to call
-     * {@link fetchAllPages}.
      */
-    public async fetchNumPages(): Promise<PageResponse> {
+    public async fetchNumPages(): Promise<number> {
         const { data } = await axios.get<string>(WorkshopFetcher._pageUrl, {
             params: {
                 ...this._params,
@@ -108,47 +119,56 @@ export class WorkshopFetcher {
             },
         });
 
-        return WorkshopParser.parsePage(data, true);
+        return WorkshopParser.parsePageCount(data);
     }
 
     /**
      * Fetches the content of each page of mods on the workshop.
-     * @param {PageResponse} pageResponse The response from {@link fetchNumPages}, this is required as it contains the
-     * number of pages needed to be fetched, as well as the IDs of all the mods on the first page.
-     * @returns {Promise<ModId[]>} The mod IDs from all pages, this is required to call {@link fetchAllItems}.
+     * @param {number} [numPages] The number of pages to fetch. If omitted, all pages will be fetched.
+     * @returns {Promise<ChunkEmitter<ModId[]>>} A chunk emitter, each chunk contains an array of pages, which
+     * themselves contain an array of mod IDs.
      */
-    public async fetchAllPages(pageResponse: PageResponse): Promise<ModId[]> {
-        const { pageCount, ids } = pageResponse;
+    public async fetchAllPages(numPages?: number): Promise<ChunkEmitter<ModId[]>> {
+        numPages ??= await this.fetchNumPages();
 
-        if (pageCount === 0) return [];
+        const argsArray = new Array(numPages).fill(0).map((_, i) => i + 1); // page number starts at 1
 
-        const argsArray = new Array(pageCount - 1).fill(0).map((_, i) => i + 2);
-        const keyArray = new Array(pageCount - 1).fill(0).map((_, i) => (i + 2).toString());
-        const erroredPages: FetchError[] = [];
-
-        const fetchedData = await this.chunkedFetch(
-            (args) => this.fetchPageItems(args),
+        return this._massRequester.createChunkEmitter(
+            (args) => this.fetchPage(args),
             argsArray,
-            keyArray,
-            erroredPages,
+            (args) => args.toString(),
             [],
         );
-
-        fetchedData.splice(0, 0, ids);
-
-        ProgressLogger.logErrors(erroredPages, 'pages');
-
-        return fetchedData.flat();
     }
 
     /**
-     * Internal helper method used by {@link fetchAllPages} to fetch an individual page.
-     * @param {number} pageNumber The page number
+     * Fetches an array of mods.
+     * @param {ModId[]} ids Array of mod IDs to fetch the content of.
+     * @returns {Promise<ChunkEmitter<Mod | null>>} A chunk emitter, each chunk contains an array of mods.
+     *
+     * A mod can be `null` if it is not publically visible (e.g. due to to explicit content tags).
+     */
+    public async fetchAllMods(ids?: ModId[]): Promise<ChunkEmitter<Mod | null>> {
+        ids ??= (await MassRequester.collectAllFromEmitter(await this.fetchAllPages())).flat();
+
+        const argsArray = new Array(ids.length).fill(0).map((_, i) => ids![i]);
+
+        return this._massRequester.createChunkEmitter(
+            (args) => WorkshopFetcher.fetchMod(args),
+            argsArray,
+            (args) => args,
+            null,
+        );
+    }
+
+    /**
+     * Fetches a single page of mods.
+     * @param {number} pageNumber The page number, starts at 1.
      * @returns {Promise<ModId[]>} The mod IDs on the page.
      *
-     * The page number should start at 2, since the first page is fetched by {@link fetchNumPages}.
+     * This is not a static method as page contents are dependent on the instance's {@link _params}.
      */
-    private async fetchPageItems(pageNumber: number): Promise<ModId[]> {
+    private async fetchPage(pageNumber: number): Promise<ModId[]> {
         const { data } = await axios.get<string>(WorkshopFetcher._pageUrl, {
             params: {
                 ...this._params,
@@ -156,40 +176,15 @@ export class WorkshopFetcher {
             },
         });
 
-        return WorkshopParser.parsePage(data);
-    }
-
-    /**
-     * Fetches the content of each mod on the workshop.
-     * @param {ModId[]} ids The mod IDs from all pages, this is returned from {@link fetchAllPages}.
-     * @returns {Promise<Mod[]>} The content of each mod on the workshop.
-     */
-    public async fetchAllItems(ids: ModId[]): Promise<Mod[]> {
-        const itemCount = ids.length;
-
-        const argsArray = new Array(itemCount).fill(0).map((_, i) => ids[i]);
-        const keyArray = argsArray;
-        const erroredItems: FetchError[] = [];
-
-        const fetchedData = await this.chunkedFetch(
-            (args) => WorkshopFetcher.fetchSingleItem(args),
-            argsArray,
-            keyArray,
-            erroredItems,
-            null,
-        );
-
-        ProgressLogger.logErrors(erroredItems, 'items');
-
-        return fetchedData.filter((e): e is Mod => e !== null);
+        return WorkshopParser.parsePageMods(data);
     }
 
     /**
      * Fetches a single workshop item.
      *
-     * Used internally by {@link fetchAllItems}.
+     * May return `null` for mods that are not publically visible (e.g. due to explicit content tags).
      */
-    public static async fetchSingleItem(id: ModId): Promise<Mod> {
+    public static async fetchMod(id: ModId): Promise<Mod | null> {
         const { data } = await axios.get<string>(WorkshopFetcher._itemUrl, {
             params: {
                 id,
@@ -198,7 +193,9 @@ export class WorkshopFetcher {
 
         const parser = new WorkshopParser(data);
 
-        return {
+        if (parser.getIsInaccessible()) return null;
+
+        const mod: Mod = {
             _id: id,
             thumbnail: parser.getThumbnail(),
             title: parser.getTitle(),
@@ -210,139 +207,15 @@ export class WorkshopFetcher {
             dlcs: parser.getDlcs(),
             size: parser.getSize(),
             posted: parser.getPosted(),
-            updated: parser.getUpdated(),
             catalogueLastUpdated: new Date().toISOString(),
             statsVisitors: parser.getVisitors(),
             statsSubscribers: parser.getSubscribers(),
             statsFavourites: parser.getFavourites(),
         };
-    }
 
-    /**
-     * Performs a large amount of asynchronous requests in chunks.
-     * @param {(args: TArgs) => Promise<TResolve>} fn The asynchronous function to call. This will be attempted
-     * {@link _maxAttempts} times (for every item in {@link argsArray}).
-     * @param {TArgs[]} argsArray Arguments to pass to each call of the function, the length of this array determines
-     * the number of calls.
-     * @param {string[]} keyArray Unique identifier for each call, used for logging errors.
-     * @param {FetchError[]} errorArray Array to store errors in.
-     * @param {TResolve} failValue The value to return if a call fails after exhausting all attempts.
-     * @returns {Promise<TResolve[]>}
-     */
-    private async chunkedFetch<TArgs, TResolve>(
-        fn: (args: TArgs) => Promise<TResolve>,
-        argsArray: TArgs[],
-        keyArray: string[],
-        errorArray: FetchError[],
-        failValue: TResolve,
-    ): Promise<TResolve[]> {
-        const itemCount = argsArray.length;
-        const chunkCount = Math.ceil(itemCount / WorkshopFetcher._chunkSize);
+        const updated = parser.getUpdated();
+        if (updated !== undefined) mod.updated = updated;
 
-        const output: TResolve[] = new Array(itemCount);
-
-        for (let chunk = 0; chunk < chunkCount; chunk++) {
-            const chunkStartIndex = chunk * WorkshopFetcher._chunkSize;
-            const chunkEndIndex = (chunk + 1) * WorkshopFetcher._chunkSize;
-
-            const chunkArgs = argsArray.slice(chunkStartIndex, chunkEndIndex);
-            const chunkKeys = keyArray.slice(chunkStartIndex, chunkEndIndex);
-
-            const trueChunkLength = chunkArgs.length;
-
-            let logger: ProgressLogger | undefined;
-
-            if (this._verbose) {
-                console.log(
-                    `Fetching chunk (${(chunk + 1)
-                        .toString()
-                        .padStart(chunkCount.toString().length, ' ')}/${chunkCount})`,
-                );
-                logger = new ProgressLogger(trueChunkLength);
-            }
-
-            const promiseArray = new Array<Promise<TResolve>>(trueChunkLength);
-
-            for (let i = 0; i < trueChunkLength; i++) {
-                const args = chunkArgs[i];
-                const key = chunkKeys[i];
-
-                promiseArray[i] = new Promise<TResolve>((resolve) => {
-                    WorkshopFetcher.multiAttempt(fn, args, (msg) => logger?.log(i, msg))
-                        .then(resolve)
-                        .catch((error) => {
-                            errorArray.push({
-                                key,
-                                message: WorkshopFetcher.handleError(error),
-                                error,
-                            });
-                            resolve(failValue);
-                        });
-                });
-            }
-
-            const fetchedChunkData = await Promise.all(promiseArray);
-
-            logger?.close();
-
-            for (let i = 0; i < trueChunkLength; i++) {
-                output[chunkStartIndex + i] = fetchedChunkData[i];
-            }
-        }
-
-        return output;
-    }
-
-    /**
-     * Attempts to successfully run an asynchronous function mutliple times.
-     * @param {(args: TArgs) => Promise<TReturn>} fn The asynchronous function to run.
-     * @param {TArgs} args Arguments to pass into the function.
-     * @param {(msg: string) => void} [logFn] A function to log messages with.
-     * @returns The successful return value of the function.
-     * @throws Throws an error if the function fails after the {@link _maxAttempts maximum number} of attempts.
-     */
-    private static async multiAttempt<TArgs, TReturn>(
-        fn: (args: TArgs) => Promise<TReturn>,
-        args: TArgs,
-        logFn?: (msg: string) => void,
-    ): Promise<TReturn> {
-        let numAttempts = 0;
-        let latestError: unknown;
-
-        while (numAttempts < WorkshopFetcher._maxAttempts) {
-            try {
-                const res = await fn(args);
-
-                logFn?.(`${Colours.FgGreen}x${Colours.Reset}`);
-
-                return res;
-            } catch (error) {
-                numAttempts++;
-
-                if (numAttempts === WorkshopFetcher._maxAttempts) {
-                    logFn?.(`${Colours.FgRed}e${Colours.Reset}`);
-                    latestError = error;
-                } else {
-                    logFn?.(`${Colours.FgYellow}e${Colours.Reset}`);
-                    await new Promise((resolve) =>
-                        setTimeout(resolve, WorkshopFetcher._retryCooldownMultiplier * numAttempts),
-                    );
-                }
-            }
-        }
-
-        throw latestError;
-    }
-
-    /** Nicely formats an unknown error. */
-    private static handleError(err: unknown): string {
-        if (axios.isAxiosError(err)) {
-            if (err.response !== undefined) return `${err.response.status} (${err.response.statusText})`;
-            if (err.status !== undefined) return `${err.status} (${err.name})`;
-            if (err.code !== undefined) return `${err.code} (${err.name})`;
-            return `Unknown Axios Error (${err.name})`;
-        }
-        if (err instanceof Error) return `${err.name}`;
-        return 'Unknown';
+        return mod;
     }
 }

@@ -4,13 +4,12 @@ import { TAG_KEYWORDS } from '../constants/tags';
 import { ModAuthor } from '../types/ModAuthor';
 import { ModDLCs } from '../types/ModDLCs';
 import { ModTags } from '../types/ModTags';
-import { PageResponse } from '../types/PageResponse';
 import { ModId } from '../types/Utility';
 
 /**
  * Handles HTML parsing of workshop items into properties of the {@link Mod} object.
  *
- * The static {@link parsePage} method can be used to parse a page of workshop items.
+ * The static {@link parsePageMods} method can be used to parse a page of workshop items.
  */
 export class WorkshopParser {
     /** Contains the entire HTML DOM. */
@@ -30,6 +29,15 @@ export class WorkshopParser {
         this._ratingSection = this._root.querySelector('.ratingSection');
         this._detailsElements = this._root.querySelectorAll('.detailsStatRight');
         this._statsElements = this._root.querySelector('.stats_table')?.querySelectorAll('td');
+    }
+
+    /**
+     * Some mods require the client to be logged in to view, such as those with explicit content tags.
+     *
+     * E.g. https://steamcommunity.com/sharedfiles/filedetails/?id=2911258858
+     */
+    public getIsInaccessible(): boolean {
+        return this._root.querySelector('#message') !== null;
     }
 
     public getThumbnail(): string {
@@ -57,7 +65,7 @@ export class WorkshopParser {
         - unknown stars https://community.akamai.steamstatic.com/public/images/sharedfiles/not-yet_large.png?v=2 
         */
         const ratingStarsString = this._ratingSection?.querySelector('img')?.getAttribute('src') ?? '';
-        // extract star count via capture group in RegExp
+        // extract star count via capture group in RegExp (ty @pumbas600)
         return parseInt(/([0-5])-star/i.exec(ratingStarsString)?.at(1) ?? '0');
     }
 
@@ -163,13 +171,10 @@ export class WorkshopParser {
     }
 
     /**
-     * Gets the page count and contained item IDs from a page.
+     * Gets the contained item IDs from a page.
      * @param {string} rawData The raw HTML data of the page.
-     * @param {boolean} [includePageCount] Whether to include the page count in the returned object.
      */
-    public static parsePage(rawData: string, includePageCount: true): PageResponse;
-    public static parsePage(rawData: string, includePageCount?: false): ModId[];
-    public static parsePage(rawData: string, includePageCount?: boolean): PageResponse | ModId[] {
+    public static parsePageMods(rawData: string): ModId[] {
         const root = parse(rawData);
 
         const ids = root
@@ -177,14 +182,20 @@ export class WorkshopParser {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .map<ModId>((e) => (e.childNodes[1] as any).attributes['data-publishedfileid']);
 
-        if (!includePageCount) return ids;
+        return ids;
+    }
+
+    /**
+     * Gets the page count from a page.
+     * @param {stirng} rawData The raw HTML data of the page.
+     */
+    public static parsePageCount(rawData: string): number {
+        const root = parse(rawData);
 
         const pageElements = root.querySelectorAll('.pagelink');
 
-        if (pageElements.length === 0) return { ids: [], pageCount: 0 };
+        if (pageElements.length === 0) return 0;
 
-        const pageCount = parseInt(pageElements[pageElements.length - 1].innerText.replace(',', ''));
-
-        return { ids, pageCount };
+        return parseInt(pageElements[pageElements.length - 1].innerText.replace(',', ''));
     }
 }
