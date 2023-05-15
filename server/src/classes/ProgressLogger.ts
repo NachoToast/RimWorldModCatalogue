@@ -1,7 +1,7 @@
 /**
- * Handles routine logging of progress of multiple asynchronous tasks to `process.stdout`.
+ * Handles routine logging of progress to `process.stdout`.
  *
- * The static {@link logErrors} method can be used to log errors in a nice format.
+ * Progress is represented as an array of strings, where each string represents the status of a task.
  *
  * The basic lifecycle of a logger is:
  * 1. Instantiation
@@ -32,6 +32,7 @@ export class ProgressLogger {
 
     /**
      * Creates a new {@link ProgressLogger} instance.
+     * @param {string} title Title string to lead log messages with.
      * @param {number} numItems The number of tasks to track.
      */
     public constructor(title: string, numItems: number) {
@@ -45,6 +46,7 @@ export class ProgressLogger {
         this._title = title;
         this._output = new Array(numItems).fill('-');
         this._rows = Math.ceil(numItems / this._maxWidth);
+
         this._interval = setInterval(() => {
             if (this._dirty) {
                 this._dirty = false;
@@ -76,7 +78,7 @@ export class ProgressLogger {
         }
     }
 
-    /** Logs all task statuses to `process.stdout`. */
+    /** Logs all task statuses to the console. */
     private update(): void {
         console.log(this._title);
         console.log(this._output.join(''));
