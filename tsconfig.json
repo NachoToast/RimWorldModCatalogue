@@ -26,9 +26,6 @@
         —————————————————————————————
         */
         "noFallthroughCasesInSwitch": true,
-        "noImplicitOverride": true,
-        "paths": {
-            "@shared": ["./shared/index.ts"]
-        }
+        "noImplicitOverride": true
     }
 }

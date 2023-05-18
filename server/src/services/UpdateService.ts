@@ -9,11 +9,12 @@ It is designed to be run on a schedule, and will:
 - Update the database metadata with the new timestamp.
 */
 
-import { ISOString, Mod } from '@shared';
 import { Collection, Db } from 'mongodb';
 import { MassRequester } from '../classes/MassRequester';
 import { WorkshopFetcher } from '../classes/WorkshopFetcher';
 import { Colours } from '../types/Colours';
+import { Mod } from '../types/Mod';
+import { ISOString } from '../types/Utility';
 import { upsertMods } from './ModService';
 
 interface UpdateData {

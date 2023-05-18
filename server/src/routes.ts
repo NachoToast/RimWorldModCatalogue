@@ -1,8 +1,10 @@
-import { Mod, ModSearchOptions, WithPagination } from '@shared';
 import { Express, Request, Response } from 'express';
 import { getMod, getTotalModCount, searchMods } from './services/ModService';
 import { getLastUpdate } from './services/UpdateService';
 import { Config } from './types/Config';
+import { Mod } from './types/Mod';
+import { ModSearchOptions } from './types/ModSearchOptions';
+import { WithPagination } from './types/Page';
 
 export function applyRoutes(app: Express, config: Config) {
     app.get('/', (_req, res) => {

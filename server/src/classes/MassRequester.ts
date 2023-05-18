@@ -1,4 +1,4 @@
-import { isAxiosError } from 'axios';
+import axios from 'axios';
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { Colours } from '../types/Colours';
 import { ProgressLogger } from './ProgressLogger';
@@ -257,7 +257,7 @@ export class MassRequester {
 
     /** Helper method for {@link logErrors}. */
     private static makeErrorMessage(err: unknown): string {
-        if (isAxiosError(err)) {
+        if (axios.isAxiosError(err)) {
             if (err.response !== undefined) return `${err.response.status} (${err.response.statusText})`;
             if (err.status !== undefined) return `${err.status} (${err.name})`;
             if (err.code !== undefined) return `${err.code} (${err.name})`;
