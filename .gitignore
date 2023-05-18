@@ -10,5 +10,5 @@ yarn.lock
 
 # user generated
 build/
-coverage/*
+coverage/
 *.log
