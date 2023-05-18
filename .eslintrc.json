@@ -1,4 +1,12 @@
 {
+    "settings": {
+        "import/parsers": {
+            "@typescript-eslint/parser": [".ts"]
+        },
+        "import/resolver": {
+            "typescript": true
+        }
+    },
     "rules": {
         "eqeqeq": ["error", "always"],
         "no-unused-vars": "warn",
