@@ -1,4 +1,4 @@
-import { ValuesOf, JSONValue } from './Utility';
+import { ValuesOf, JSONValue } from '@shared';
 
 /**
  * Shape of exported config that will be used throughout the server.

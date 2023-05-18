@@ -8,14 +8,8 @@ This services handles all interactions with the mods database, such as:
 - Searching mods.
 */
 
+import { Mod, ModDLCs, ModId, ModSearchOptions, ModSortOptions, ModTags, WithPagination } from '@shared';
 import { AnyBulkWriteOperation, Collection, Condition, Db, Filter, FindOptions, Sort } from 'mongodb';
-import { Mod } from '../types/Mod';
-import { ModDLCs } from '../types/ModDLCs';
-import { ModSearchOptions } from '../types/ModSearchOptions';
-import { ModSortOptions } from '../types/ModSortOptions';
-import { ModTags } from '../types/ModTags';
-import { WithPagination } from '../types/Page';
-import { ModId } from '../types/Utility';
 
 let model: Collection<Mod> | null = null;
 

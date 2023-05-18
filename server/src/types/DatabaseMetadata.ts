@@ -1,4 +1,4 @@
-import { ISOString } from './Utility';
+import { ISOString } from '@shared';
 
 export interface DatabaseMetadata {
     lastUpdated: ISOString;

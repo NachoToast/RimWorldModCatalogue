@@ -1,6 +1,5 @@
+import { Mod, ModId } from '@shared';
 import axios, { AxiosRequestConfig } from 'axios';
-import { Mod } from '../types/Mod';
-import { ModId } from '../types/Utility';
 import { ChunkEmitter, MassRequester } from './MassRequester';
 import { WorkshopParser } from './WorkshopParser';
 
