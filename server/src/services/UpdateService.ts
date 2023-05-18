@@ -13,8 +13,8 @@ import { Collection, Db } from 'mongodb';
 import { MassRequester } from '../classes/MassRequester';
 import { WorkshopFetcher } from '../classes/WorkshopFetcher';
 import { Colours } from '../types/Colours';
-import { Mod } from '../types/Mod';
-import { ISOString } from '../types/Utility';
+import { Mod } from '../types/shared/Mod';
+import { ISOString } from '../types/shared/Utility';
 import { upsertMods } from './ModService';
 
 interface UpdateData {
