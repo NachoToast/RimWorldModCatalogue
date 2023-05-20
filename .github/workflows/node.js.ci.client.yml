@@ -8,7 +8,6 @@ on:
         paths:
             - client/**
             - .github/workflows/node.js.ci.client.yml
-            - server/src/types/shared/**
 
 defaults:
     run:
