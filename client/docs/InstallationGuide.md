@@ -19,6 +19,23 @@ cd RimWorldCatalogue/client
 pnpm install
 ```
 
-## 2. Start the Client
+## 2. Create Symlinks
+
+The [client types folder](../src/types/) needs to be linked to the [server shared types folder](../../server/src/types/shared/):
+
+For **Windows**, you will need to run the [linkTypes.bat](../scripts/linkTypes.bat) script as an administrator.
+
+> ![image](./images/WindowsRunAsAdministrator.png)
+
+For **MacOS**, **Linux**, and other UNIX-like operating systems, you need to run the [linkTypes.sh](../scripts/linkTypes.sh) script.
+
+> ```sh
+> chmod +x scripts/linkTypes.sh
+> ./scripts/linkTypes.sh
+> ```
+
+## 3. Start the Client
 
 Now you can start the client (and other scripts) using `pnpm start` (or `npm start`).
+
+<sup>[1]</sup>Yes I know Linux is "unix-like" and not "unix", not relevant here.
