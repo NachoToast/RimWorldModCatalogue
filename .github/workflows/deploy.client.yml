@@ -44,12 +44,12 @@ jobs:
               run: pnpm build
 
             - name: Upload artifact
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-pages-artifact@v1
               with:
-                  name: github-pages
                   path: client/build
-                  retention-days: 1
-                  if-no-files-found: error
+            #       name: github-pages
+            #       retention-days: 1
+            #       if-no-files-found: error
 
     deploy:
         name: Deploy
