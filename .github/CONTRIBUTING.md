@@ -12,7 +12,7 @@ _The information in this section is relevant for both parts of the application (
 
 1. Installation
     - Setting up your own version of the client/server is not required to contribute, but it is recommended.
-    - See the [client README](../client/README.md#installation) and/or [server README](../server/README.md#installation) for instructions on how to set up your own version of the client/server.
+    - See the [client installation guide](../client/docs/InstallationGuide.md) and/or [server installation guide](../server/docs/InstallationGuide.md) for instructions on how to set up your own version of the client/server.
 
 ### Server Contributions
 
