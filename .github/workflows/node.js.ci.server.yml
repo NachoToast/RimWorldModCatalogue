@@ -7,6 +7,7 @@ on:
     push:
         paths:
             - server/**
+            - .github/workflows/node.js.ci.server.yml
 
 defaults:
     run:
