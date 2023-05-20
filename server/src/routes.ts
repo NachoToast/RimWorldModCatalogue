@@ -5,6 +5,7 @@ import { Config } from './types/Config';
 import { Mod } from './types/shared/Mod';
 import { ModSearchOptions } from './types/shared/ModSearchOptions';
 import { WithPagination } from './types/shared/Page';
+import { RootResponse } from './types/shared/RootResponse';
 
 export function applyRoutes(app: Express, config: Config) {
     app.get('/', (_req, res) => {
@@ -13,7 +14,7 @@ export function applyRoutes(app: Express, config: Config) {
         );
     });
 
-    app.post('/', async (_req, res) => {
+    app.post('/', async (_req, res: Response<RootResponse>) => {
         const [totalMods, lastUpdate] = await Promise.all([getTotalModCount(), getLastUpdate()]);
 
         res.status(200).json({

@@ -14,16 +14,8 @@ import { MassRequester } from '../classes/MassRequester';
 import { WorkshopFetcher } from '../classes/WorkshopFetcher';
 import { Colours } from '../types/Colours';
 import { Mod } from '../types/shared/Mod';
-import { ISOString } from '../types/shared/Utility';
+import { UpdateData } from '../types/shared/UpdateData';
 import { upsertMods } from './ModService';
-
-interface UpdateData {
-    timestamp: ISOString;
-    numInserted: number;
-    numUpdated: number;
-    numErrored: number;
-    numSkipped: number;
-}
 
 let model: Collection<UpdateData> | null = null;
 
