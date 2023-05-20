@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy (Server)
 
 on:
     workflow_run:
@@ -10,12 +10,15 @@ defaults:
     run:
         working-directory: server
 
+concurrency:
+    group: server_deploy
+    cancel-in-progress: false
+
 jobs:
-    production-deploy:
-        name: Deploy to Production
+    deploy:
+        name: Deploy
         if: ${{ github.repository == 'NachoToast/RimWorldModCatalogue' && github.event.workflow_run.conclusion == 'success' }}
         runs-on: ubuntu-latest
-        concurrency: production_environment
         steps:
             - name: Execute remote build process
               uses: appleboy/ssh-action@v0.1.8
