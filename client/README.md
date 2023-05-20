@@ -6,6 +6,8 @@
 
 The client for the RimWorld Mod Catalogue handles displaying mod data to the user, and provides a UI for the user to search and filter mod data.
 
+The live production client can be found at [https://rimworld.nachotoast.com](https://rimworld.nachotoast.com).
+
 ## Table of Contents <!-- omit in toc -->
 
 - [Technologies](#technologies)
