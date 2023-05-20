@@ -24,7 +24,7 @@ jobs:
                 # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
         steps:
-            - name: Checkout Repository
+            - name: Checkout repository
               uses: actions/checkout@v3
 
             - name: Setup pnpm
@@ -38,7 +38,7 @@ jobs:
                   node-version: ${{ matrix.node-version }}
                   cache: "pnpm"
 
-            - name: Install Dependencies
+            - name: Install dependencies
               run: pnpm install
 
             - name: Typecheck
