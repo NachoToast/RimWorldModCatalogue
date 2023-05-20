@@ -8,18 +8,14 @@ body {
         'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    height: 101vh;
+    height: 100vh;
     overflow-x: hidden;
     background: linear-gradient(to bottom right, #1b2838, 90%, #040508);
+    background-attachment: fixed;
     color: white;
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
-}
-
-h1 {
-    text-align: center;
-    font-size: 36px;
 }
 
 .header {
@@ -32,18 +28,128 @@ h1 {
 }
 
 .header:hover {
-    background-color: #1b1e25;
+    background-color: #2d2f35;
     box-shadow: none;
 }
 
-section.hidden {
-    display: none;
+h1 {
+    text-align: center;
+    font-size: 36px;
+    margin: 0.5em;
+}
+
+main {
+    height: 100%;
+    width: min(90%, 1200px);
 }
 
 section#root {
+    margin-top: 3em;
+}
+
+section[hidden] {
+    display: none;
+}
+
+.textSearchArea {
+    display: flex;
+    flex-flow: row nowrap;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: solid 2px #373737;
+    transition: border-color 100ms;
+    border-radius: 0.3em;
+}
+
+.textSearchArea:hover,
+.textSearchArea:focus-within {
+    border-color: #aaaaaa;
+}
+
+.textSearchArea > input[type='text'] {
+    padding: 0.5em;
+    font-size: 20px;
+    outline: none;
+    color: #cccccc;
+    background-color: transparent;
+    border: none;
+    flex-grow: 1;
+}
+
+.textSearchArea > button {
+    background-color: transparent;
+    font-size: 20px;
+    padding: 0.5em;
+    border: none;
+    cursor: pointer;
+    transition: background-color 100ms;
+    color: #cccccc;
+}
+
+.textSearchArea > button:hover {
+    background-color: #272727;
+}
+
+::-webkit-input-placeholder {
+    font-style: italic;
+    font-size: 18px;
+}
+:-moz-placeholder {
+    font-style: italic;
+    font-size: 18px;
+}
+::-moz-placeholder {
+    font-style: italic;
+    font-size: 18px;
+}
+:-ms-input-placeholder {
+    font-style: italic;
+    font-size: 18px;
+}
+
+.searchStatsArea {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 1em;
+    padding: 0 1em;
+}
+
+.searchStatsArea > p:first-child {
+    flex-grow: 1;
+}
+
+div.modDisplayArea {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 40px 10px;
+}
+
+div.mod {
     display: flex;
     flex-flow: column nowrap;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+    align-items: flex-start;
+    /* border: solid 1px gray; */
+}
+
+div.mod > img:first-child {
+    width: 200px;
+    height: 112px;
+}
+
+div.mod > img:nth-child(2) {
+    width: 81px;
+    height: 14px;
+}
+
+div.mod > p {
+    margin: 0;
+}
+
+div.mod > a {
+    color: gray;
+    text-decoration: none;
+    transition: color 100ms;
+}
+
+div.mod > a:hover {
+    color: lightgray;
 }

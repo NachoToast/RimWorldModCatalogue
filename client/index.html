@@ -6,13 +6,37 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>RimWorld Mod Catalogue</title>
         <script defer type="module" src="src/main.ts"></script>
+        <script src="https://kit.fontawesome.com/6c8233ad7b.js" crossorigin="anonymous"></script>
     </head>
     <body>
         <a href="/" class="header">
             <h1>RimWorld Mod Catalogue</h1>
         </a>
-        <section id="root">
-            <h3 style="color: #cccccc">Under construction, check back later.</h3>
-        </section>
+        <main>
+            <section id="root">
+                <form>
+                    <div class="textSearchArea">
+                        <input type="text" name="search" placeholder="Search Mods" />
+                        <button type="submit">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </div>
+                    <div class="dlcSelector">
+                        <label for="dlcSelector">DLCs</label>
+                        <select name="dlcSelector" id="dlcSelector">
+                            <option value="all">All</option>
+                            <option value="royalty">Royalty</option>
+                            <option value="ideology">Ideology</option>
+                        </select>
+                    </div>
+                </form>
+                <div class="searchStatsArea">
+                    <p class="entryStatDisplay">Showing 1-30 of 30,799 entries</p>
+                    <p>Sort by: <b>Most Popular</b></p>
+                    <p>Over time period: <b>One Week</b></p>
+                </div>
+                <div class="modDisplayArea"></div>
+            </section>
+        </main>
     </body>
 </html>
