@@ -46,7 +46,7 @@ jobs:
             - name: Upload artifact
               uses: actions/upload-artifact@v3
               with:
-                  name: build
+                  name: github-pages
                   path: client/build
                   retention-days: 1
                   if-no-files-found: error
