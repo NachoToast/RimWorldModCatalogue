@@ -9,7 +9,7 @@ import { ModTags } from './types/shared/ModTags';
 import { ModId } from './types/shared/Utility';
 
 const searchParams: ModSearchOptions = {
-    page: 299,
+    page: 0,
     perPage: 30,
     sortBy: ModSortOptions.Id,
     sortDirection: 1,
