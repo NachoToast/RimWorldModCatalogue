@@ -1,5 +1,9 @@
 # RimWorld Mod Catalogue / Client <!-- omit in toc -->
 
+[![CI (Client)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.client.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.client.yml)
+[![Deploy (Client)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.client.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.client.yml)
+[![CodeQL](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/codeql-analysis.yml)
+
 The client for the RimWorld Mod Catalogue handles displaying mod data to the user, and provides a UI for the user to search and filter mod data.
 
 ## Table of Contents <!-- omit in toc -->

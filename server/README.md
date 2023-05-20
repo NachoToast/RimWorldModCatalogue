@@ -1,8 +1,8 @@
 # RimWorld Mod Catalogue / Server <!-- omit in toc -->
 
 [![CI (Server)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.server.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.server.yml)
+[![Deploy (Server)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.server.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.server.yml)
 [![CodeQL](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/codeql-analysis.yml)
-[![Deploy](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.yml)
 
 The server for the RimWorld Mod Catalogue handles fetching and updating mod data from the Steam workshop, and provides an API for the client to use to query mod data.
 

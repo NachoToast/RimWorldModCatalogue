@@ -1,5 +1,11 @@
 # RimWorld Mod Catalogue
 
+[![CI (Client)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.client.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.client.yml)
+[![Deploy (Client)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.client.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.client.yml)
+[![CI (Server)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.server.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.server.yml)
+[![Deploy (Server)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.server.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.server.yml)
+[![CodeQL](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/codeql-analysis.yml)
+
 The RimWorld Mod Catalogue is a fullstack application aimed to provide a better mod browsing experience for RimWorld players.
 
 ### Why was this made?
