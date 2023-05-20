@@ -47,9 +47,6 @@ jobs:
               uses: actions/upload-pages-artifact@v1
               with:
                   path: client/build
-            #       name: github-pages
-            #       retention-days: 1
-            #       if-no-files-found: error
 
     deploy:
         name: Deploy
