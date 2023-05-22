@@ -1,0 +1,60 @@
+ul[rwmc-generate='includer'] {
+    list-style: none;
+    padding-left: 0;
+    width: fit-content;
+}
+
+/* tag includers are flex row since there are a lot of tags */
+ul[rwmc-generate='includer'][rwmc-includer-type='tag'] {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+ul[rwmc-generate='includer'] label {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    transition: background-color 100ms linear;
+    cursor: pointer;
+    padding-right: 0.5em;
+    padding: 0.5em 0.5em;
+    gap: 0.5em;
+}
+
+ul[rwmc-generate='includer'] label:hover {
+    background-color: var(--hover-color);
+}
+
+ul[rwmc-generate='includer'] img {
+    width: 32px;
+    height: auto;
+}
+
+ul[rwmc-generate='includer'] span {
+    flex-grow: 1;
+}
+
+ul[rwmc-generate='includer'] input {
+    cursor: pointer;
+    align-self: center;
+    width: 16px;
+    height: 16px;
+    -webkit-appearance: initial;
+    appearance: initial;
+    background-color: var(--lightgray-component);
+    border: solid 0.15em var(--super-lightgray-component);
+    border-radius: 0.3em;
+    margin: 0;
+    display: grid;
+    place-content: center;
+    position: relative;
+    transition: background-color 100ms;
+}
+
+ul[rwmc-generate='includer'] label[rwmc-state='including'] input {
+    background-color: lightgreen;
+}
+
+ul[rwmc-generate='includer'] label[rwmc-state='excluding'] input {
+    background-color: lightcoral;
+}

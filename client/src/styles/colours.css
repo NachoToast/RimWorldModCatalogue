@@ -1,0 +1,17 @@
+:root {
+    color-scheme: dark;
+    --primary-bg-color: #1b2838;
+    --secondary-bg-color: #040508;
+
+    /* for large block style elements such as headers, footers, and text inputs */
+    --darkgray-card: #171a21;
+    --darkgray-card-hover: #2d2f35;
+
+    --hover-color: #283b53;
+
+    /* for smaller elements, or components of larger ones, such as checkbox backgrounds and text input outlines */
+    --lightgray-component: #474747;
+    --super-lightgray-component: gray;
+
+    --light-text-color: #cccccc;
+}

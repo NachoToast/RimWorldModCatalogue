@@ -1,0 +1,21 @@
+#header {
+    background-color: var(--darkgray-card);
+    width: 100%;
+    box-shadow: 0 0 5px 1px var(--darkgray-card);
+    color: inherit;
+    text-decoration: inherit;
+    transition: background-color 100ms linear;
+    margin-bottom: min(3em, 5vh);
+}
+
+#header:hover {
+    background-color: var(--darkgray-card-hover);
+    box-shadow: none;
+}
+
+#header > h1 {
+    text-align: center;
+    font-size: 36px;
+    margin: 0.5em;
+    color: white;
+}

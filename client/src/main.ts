@@ -1,35 +1,13 @@
-import './style.css';
 import { getMods, postRoot } from './api';
-import './config';
+import './global/config';
+import './styles';
+import { generateBackToTopButtons } from './components/backToTopButton';
+import { generateIncluders } from './components/includer';
+import { generateModTextSearchers } from './components/modTextSearcher';
+import { generateSearchForms } from './components/searchForm';
+import { loadSearchOptions } from './global/searchOptions';
 import { Mod } from './types/shared/Mod';
-import { ModDLCs } from './types/shared/ModDLCs';
 import { ModSearchOptions } from './types/shared/ModSearchOptions';
-import { ModSortOptions } from './types/shared/ModSortOptions';
-import { ModTags } from './types/shared/ModTags';
-import { ModId } from './types/shared/Utility';
-
-const searchParams: ModSearchOptions = {
-    page: 0,
-    perPage: 30,
-    sortBy: ModSortOptions.Id,
-    sortDirection: 1,
-    tagsInclude: ModTags.None,
-    tagsExclude: ModTags.None,
-    dlcsInclude: ModDLCs.None,
-    dlcsExclude: ModDLCs.None,
-};
-
-function getQueriedId(): ModId | null {
-    return new URLSearchParams(window.location.search).get('id');
-}
-
-console.log(getQueriedId());
-
-postRoot().then((rootResponse) => {
-    for (const inputElement of document.querySelectorAll<HTMLInputElement>('input[placeholder="Search Mods"]')) {
-        inputElement.placeholder = `Search ${rootResponse.estimatedModCount} Mods`;
-    }
-});
 
 function createModElement(mod: Mod): HTMLDivElement {
     const container = document.createElement('div');
@@ -57,7 +35,7 @@ function createModElement(mod: Mod): HTMLDivElement {
     return container;
 }
 
-async function makeSearch(params: ModSearchOptions): Promise<void> {
+export async function makeSearch(params: ModSearchOptions): Promise<void> {
     const { page, perPage } = params;
 
     const { items, totalItemCount } = await getMods(params);
@@ -72,9 +50,17 @@ async function makeSearch(params: ModSearchOptions): Promise<void> {
     const modElements = items.map(createModElement);
 
     for (const containerElement of document.querySelectorAll<HTMLDivElement>('div.modDisplayArea')) {
+        containerElement.innerHTML = '';
         modElements.forEach((e) => containerElement.appendChild(e));
-        // containerElement.appendChild(modElements);
     }
 }
 
-makeSearch(searchParams);
+postRoot().then(({ estimatedModCount }) => {
+    generateModTextSearchers(estimatedModCount);
+});
+
+makeSearch(loadSearchOptions());
+
+generateIncluders();
+generateBackToTopButtons();
+generateSearchForms();

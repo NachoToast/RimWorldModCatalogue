@@ -1,0 +1,49 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+        'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    height: 100vh;
+    overflow-x: hidden;
+    background: url('public/BGPlanet.png');
+    background-size: cover;
+    background-attachment: fixed;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    color: var(--light-text-color);
+}
+
+div#bgMask {
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(to bottom right, var(--primary-bg-color), 90%, var(--secondary-bg-color));
+    opacity: 0.9;
+    z-index: -1;
+}
+
+a {
+    color: inherit;
+    text-decoration: inherit;
+    transition: color 100ms;
+}
+
+main {
+    flex-grow: 1;
+    width: min(90%, 1200px);
+}
+
+section[hidden] {
+    display: none;
+}
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}

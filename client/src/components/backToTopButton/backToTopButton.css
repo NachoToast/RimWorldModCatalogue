@@ -1,0 +1,12 @@
+button[rwmc-generate='back-to-top-button'] {
+    background-color: transparent;
+    border: none;
+    color: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    transition: color 100ms;
+}
+
+button[rwmc-generate='back-to-top-button']:hover {
+    color: var(--light-text-color);
+}
