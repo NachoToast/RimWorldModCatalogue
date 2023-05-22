@@ -1,5 +1,5 @@
 import { ModDLCs } from '../types/shared/ModDLCs';
-import { ModSearchOptions } from '../types/shared/ModSearchOptions';
+import { SearchChainOptions, ModSearchOptions } from '../types/shared/ModSearchOptions';
 import { ModSortOptions } from '../types/shared/ModSortOptions';
 import { ModTags } from '../types/shared/ModTags';
 
@@ -12,8 +12,10 @@ const defaultSearchOptions: ModSearchOptions = {
     sortDirection: 1,
     tagsInclude: ModTags.None,
     tagsExclude: ModTags.None,
+    tagsIncludeChain: SearchChainOptions.Or,
     dlcsInclude: ModDLCs.None,
     dlcsExclude: ModDLCs.None,
+    dlcsIncludeChain: SearchChainOptions.Or,
 };
 
 export function loadSearchOptions(): ModSearchOptions {
