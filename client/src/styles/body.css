@@ -6,7 +6,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
     height: 100vh;
     overflow-x: hidden;
-    background: url('public/BGPlanet.png');
+    background: url('../assets/BGPlanet.png');
     background-size: cover;
     background-attachment: fixed;
     display: flex;
