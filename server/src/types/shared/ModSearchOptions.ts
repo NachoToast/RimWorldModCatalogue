@@ -10,7 +10,7 @@ export enum SearchChainOptions {
 }
 
 /**
- * Include operations are OR chained.
+ * Include operations are OR chained by default.
  *
  * Exclude operations are AND chained, and take priority over include operations.
  *
