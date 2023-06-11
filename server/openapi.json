@@ -509,7 +509,7 @@
                 "schema": {
                     "$ref": "#/components/schemas/SearchChainOptions"
                 },
-                "example": 1
+                "example": 0
             },
             "dlcsInclude": {
                 "in": "query",
@@ -536,7 +536,7 @@
                 "schema": {
                     "$ref": "#/components/schemas/SearchChainOptions"
                 },
-                "example": 1
+                "example": 0
             },
             "search": {
                 "in": "query",
