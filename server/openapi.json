@@ -88,16 +88,16 @@
                                         "totalItemCount": {
                                             "type": "integer",
                                             "externalDocs": {
-                                                "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/Page.ts#L10-L11",
-                                                "description": "src/types/Page.ts -> WithPagination.totalItemCount"
+                                                "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/f9c42fc069f078ef1488d2de09a97121ab890f55/server/src/types/shared/Page.ts#L10-L11",
+                                                "description": "src/types/shared/Page.ts -> WithPagination.totalItemCount"
                                             },
                                             "description": "Total number of relevant items across all pages."
                                         },
                                         "items": {
                                             "type": "array",
                                             "externalDocs": {
-                                                "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/Page.ts#L13",
-                                                "description": "src/types/Page.ts -> WithPagination.items"
+                                                "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/f9c42fc069f078ef1488d2de09a97121ab890f55/server/src/types/shared/Page.ts#L13",
+                                                "description": "src/types/shared/Page.ts -> WithPagination.items"
                                             },
                                             "items": {
                                                 "$ref": "#/components/schemas/Mod"
@@ -265,8 +265,8 @@
             "ISOString": {
                 "type": "string",
                 "externalDocs": {
-                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/Utility.ts#L3-L10",
-                    "description": "src/types/Utility.ts -> ISOString"
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/f9c42fc069f078ef1488d2de09a97121ab890f55/server/src/types/shared/Utility.ts#L3-L10",
+                    "description": "src/types/shared/Utility.ts -> ISOString"
                 },
                 "description": "A string in ISO format, used to store dates.",
                 "example": "2023-05-13T01:39:31.199Z'"
@@ -274,8 +274,8 @@
             "ModSortOptions": {
                 "type": "integer",
                 "externalDocs": {
-                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/ModSortOptions.ts",
-                    "description": "src/types/ModSortOptions.ts"
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/f9c42fc069f078ef1488d2de09a97121ab890f55/server/src/types/shared/ModSortOptions.ts",
+                    "description": "src/types/shared/ModSortOptions.ts"
                 },
                 "minimum": 0,
                 "maximum": 8
@@ -283,8 +283,8 @@
             "ModDLCs": {
                 "type": "integer",
                 "externalDocs": {
-                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/ModDLCs.ts",
-                    "description": "src/types/ModDLCs.ts"
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/f9c42fc069f078ef1488d2de09a97121ab890f55/server/src/types/shared/ModDLCs.ts",
+                    "description": "src/types/shared/ModDLCs.ts"
                 },
                 "minimum": 0,
                 "maximum": 7
@@ -292,8 +292,8 @@
             "ModTags": {
                 "type": "integer",
                 "externalDocs": {
-                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/ModTags.ts",
-                    "description": "src/types/ModTags.ts"
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/f9c42fc069f078ef1488d2de09a97121ab890f55/server/src/types/shared/ModTags.ts",
+                    "description": "src/types/shared/ModTags.ts"
                 },
                 "minimum": 0,
                 "maximum": 131071
@@ -301,8 +301,8 @@
             "ModAuthor": {
                 "type": "object",
                 "externalDocs": {
-                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/ModAuthor.ts",
-                    "description": "src/types/ModAuthor.ts"
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/f9c42fc069f078ef1488d2de09a97121ab890f55/server/src/types/shared/ModAuthor.ts",
+                    "description": "src/types/shared/ModAuthor.ts"
                 },
                 "description": "Represents the author of a mod.",
                 "properties": {
@@ -322,16 +322,16 @@
             "ModId": {
                 "type": "string",
                 "externalDocs": {
-                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/Utility.ts#L12-L18",
-                    "description": "src/types/Utility.ts -> ModId"
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/f9c42fc069f078ef1488d2de09a97121ab890f55/server/src/types/shared/Utility.ts#L12-L18",
+                    "description": "src/types/shared/Utility.ts -> ModId"
                 },
                 "description": "The unique identifier of a mod, this can be used to go to its Steam page: `https://steamcommunity.com/sharedfiles/filedetails/?id=${id}`"
             },
             "Mod": {
                 "type": "object",
                 "externalDocs": {
-                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/Mod.ts",
-                    "description": "src/types/Mod.ts"
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/f9c42fc069f078ef1488d2de09a97121ab890f55/server/src/types/shared/Mod.ts",
+                    "description": "src/types/shared/Mod.ts"
                 },
                 "properties": {
                     "_id": {
@@ -424,6 +424,10 @@
             },
             "SearchChainOptions": {
                 "type": "integer",
+                "externalDocs": {
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/2722213ea24edd0de4f06e7cd27046af819eeb34/server/src/types/shared/ModSearchOptions.ts#L7-L10",
+                    "description": "src/types/shared/ModSearchOptions.ts -> SearchChainOptions"
+                },
                 "enum": [0, 1],
                 "description": "0 for \"and\", 1 for \"or\"."
             }
@@ -436,8 +440,8 @@
                 "schema": {
                     "type": "integer",
                     "externalDocs": {
-                        "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/Page.ts#L2-L3",
-                        "description": "src/types/Page.ts -> PaginationParams.page"
+                        "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/f9c42fc069f078ef1488d2de09a97121ab890f55/server/src/types/shared/Page.ts#L2-L3",
+                        "description": "src/types/shared/Page.ts -> PaginationParams.page"
                     },
                     "description": "Page number, starts at 0.",
                     "minimum": 0
@@ -451,8 +455,8 @@
                 "schema": {
                     "type": "integer",
                     "externalDocs": {
-                        "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/Page.ts#L5C31-L6",
-                        "description": "src/types/Page.ts -> PaginationParams.perPage"
+                        "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/f9c42fc069f078ef1488d2de09a97121ab890f55/server/src/types/shared/Page.ts#L5-L6",
+                        "description": "src/types/shared/Page.ts -> PaginationParams.perPage"
                     },
                     "description": "Maximum number of results to show per page.",
                     "minimum": 0,
@@ -476,8 +480,8 @@
                 "schema": {
                     "type": "integer",
                     "externalDocs": {
-                        "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/ModSearchOptions.ts#L20-L21",
-                        "description": "src/types/ModSearchOptions.ts -> ModSearchOptions.sortDirection"
+                        "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/2722213ea24edd0de4f06e7cd27046af819eeb34/server/src/types/shared/ModSearchOptions.ts#L26-L27",
+                        "description": "src/types/shared/ModSearchOptions.ts -> ModSearchOptions.sortDirection"
                     },
                     "description": "1 for ascending, -1 for descending.",
                     "enum": [1, -1]
@@ -545,8 +549,8 @@
                 "schema": {
                     "type": "string",
                     "externalDocs": {
-                        "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/main/server/src/types/ModSearchOptions.ts#L26-L32",
-                        "description": "src/types/ModSearchOptions.ts -> ModSearchOptions.search"
+                        "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/2722213ea24edd0de4f06e7cd27046af819eeb34/server/src/types/shared/ModSearchOptions.ts#L34-L40",
+                        "description": "src/types/shared/ModSearchOptions.ts -> ModSearchOptions.search"
                     },
                     "maxLength": 100,
                     "description": "If provided, sort direction will be based on title relevance instead of the provided sort direction.\n\n- Case insensitive.\n- Sort direction will also be ignored."
