@@ -12,10 +12,10 @@ const defaultSearchOptions: ModSearchOptions = {
     sortDirection: 1,
     tagsInclude: ModTags.None,
     tagsExclude: ModTags.None,
-    tagsIncludeChain: SearchChainOptions.Or,
+    tagsIncludeChain: SearchChainOptions.And,
     dlcsInclude: ModDLCs.None,
     dlcsExclude: ModDLCs.None,
-    dlcsIncludeChain: SearchChainOptions.Or,
+    dlcsIncludeChain: SearchChainOptions.And,
 };
 
 export function loadSearchOptions(): ModSearchOptions {
