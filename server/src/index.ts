@@ -3,7 +3,7 @@ import { loadConfig } from './loaders/loadConfig';
 import { loadExpress, startApp } from './loaders/loadExpress';
 import { loadMongo } from './loaders/loadMongo';
 import { initializeModService } from './services/ModService';
-import { getLastUpdate, initializeUpdateService, performUpdate } from './services/UpdateService';
+import { getLastUpdate, initializeUpdateService, performUpdate, performUpdateSingular } from './services/UpdateService';
 
 async function main() {
     const config = loadConfig();
@@ -31,6 +31,18 @@ async function main() {
             performUpdate();
         }
     }
+
+    // perform background update for oldest updated mod every `smallUpdateInterval` minutes
+    const smallUpdateJob = schedule(`*/${config.smallUpdateIntervalMinutes} * * * *`, async () => {
+        const timeout = setTimeout(() => {
+            console.log(`Small update timed out (max ${config.smallUpdateIntervalMinutes} minutes), stopping job`);
+            smallUpdateJob.stop();
+        }, config.smallUpdateIntervalMinutes * 60 * 1_000);
+
+        await performUpdateSingular();
+
+        clearTimeout(timeout);
+    });
 }
 
 main();

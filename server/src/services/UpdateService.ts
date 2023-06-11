@@ -14,8 +14,12 @@ import { MassRequester } from '../classes/MassRequester';
 import { WorkshopFetcher } from '../classes/WorkshopFetcher';
 import { Colours } from '../types/Colours';
 import { Mod } from '../types/shared/Mod';
+import { ModDLCs } from '../types/shared/ModDLCs';
+import { SearchChainOptions } from '../types/shared/ModSearchOptions';
+import { ModSortOptions } from '../types/shared/ModSortOptions';
+import { ModTags } from '../types/shared/ModTags';
 import { UpdateData } from '../types/shared/UpdateData';
-import { upsertMods } from './ModService';
+import { deleteMod, searchMods, upsertMods } from './ModService';
 
 let model: Collection<UpdateData> | null = null;
 
@@ -188,10 +192,20 @@ async function performBackgroundWorkshopFetch(timestamp: number, mode: 'posted' 
     };
 }
 
+let isDoingUpdate = false;
+
+/** Performs a background or first-time fetch of workshop mods. */
 export async function performUpdate(): Promise<void> {
+    if (isDoingUpdate) return;
+    isDoingUpdate = true;
+
     const lastUpdate = await getLastUpdate();
 
-    if (lastUpdate === null) return await performInitialWorkshopFetch();
+    if (lastUpdate === null) {
+        await performInitialWorkshopFetch();
+        isDoingUpdate = false;
+        return;
+    }
 
     let timestamp = Math.floor(new Date(lastUpdate.timestamp).getTime() / 1_000);
 
@@ -218,4 +232,49 @@ export async function performUpdate(): Promise<void> {
     });
 
     console.log(`Finished background mod fetches (took ${Math.floor((Date.now() - startTime) / 1_000)}s)`);
+    isDoingUpdate = false;
+}
+
+let numIndividuallyUpdated = 0;
+export async function performUpdateSingular(): Promise<void> {
+    // this shouldn't be done while background fetches are ongoing
+    if (isDoingUpdate) return;
+
+    const startTime = Date.now();
+
+    const oldestUpdated = await searchMods({
+        page: 0,
+        perPage: 1,
+        sortBy: ModSortOptions.CatalogueLastUpdated,
+        sortDirection: 1,
+        tagsInclude: ModTags.None,
+        tagsExclude: ModTags.None,
+        tagsIncludeChain: SearchChainOptions.And,
+        dlcsInclude: ModDLCs.None,
+        dlcsExclude: ModDLCs.None,
+        dlcsIncludeChain: SearchChainOptions.And,
+    });
+
+    const oldestUpdatedMod = oldestUpdated.items.at(0);
+    if (oldestUpdatedMod === undefined) return;
+
+    const updatedModData = await WorkshopFetcher.fetchMod(oldestUpdatedMod._id);
+
+    let operationType: 'Deleted' | 'Updated';
+
+    if (updatedModData === null) {
+        operationType = 'Deleted';
+        await deleteMod(oldestUpdatedMod._id);
+    } else {
+        operationType = 'Updated';
+        await upsertMods([updatedModData]);
+    }
+
+    const timeTaken = Math.floor((Date.now() - startTime) / 1_000);
+
+    console.log(
+        `[${++numIndividuallyUpdated}] ${operationType} ${oldestUpdatedMod.title} (${
+            oldestUpdatedMod._id
+        }) (took ${timeTaken}s)`,
+    );
 }
