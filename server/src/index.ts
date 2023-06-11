@@ -19,8 +19,17 @@ async function main() {
     // perform background update every `updateIntervalHours` hours
     schedule(`0 */${config.updateIntervalHours} * * *`, performUpdate);
 
-    if ((await getLastUpdate()) === null) {
+    const lastUpdated = await getLastUpdate();
+
+    if (lastUpdated === null) {
         performUpdate();
+    } else {
+        const updatedHoursAgo = Math.floor(
+            (Date.now() - new Date(lastUpdated.timestamp).getTime()) / (1_000 * 60 * 60),
+        );
+        if (updatedHoursAgo >= config.updateIntervalHours) {
+            performUpdate();
+        }
     }
 }
 
