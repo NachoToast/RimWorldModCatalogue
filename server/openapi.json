@@ -109,6 +109,12 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestError400"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/RateLimited429"
                     }
                 }
             }
@@ -136,8 +142,14 @@
                             }
                         }
                     },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestError400"
+                    },
                     "404": {
                         "description": "The mod with the given ID does not exist."
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/RateLimited429"
                     }
                 }
             }
@@ -150,6 +162,12 @@
                         "content": {
                             "text/html": {}
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestError400"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/RateLimited429"
                     }
                 }
             },
@@ -216,6 +234,12 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestError400"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/RateLimited429"
                     }
                 }
             }
@@ -231,6 +255,12 @@
                                 "example": "123.123.123.123"
                             }
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestError400"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/RateLimited429"
                     }
                 }
             }
@@ -243,6 +273,9 @@
                         "content": {
                             "application/json": {}
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestError400"
                     }
                 }
             }
@@ -255,6 +288,9 @@
                         "content": {
                             "text/html": {}
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestError400"
                     }
                 }
             }
@@ -430,6 +466,101 @@
                 },
                 "enum": [0, 1],
                 "description": "0 for \"and\", 1 for \"or\"."
+            },
+            "SiteErrorObject": {
+                "type": "object",
+                "externalDocs": {
+                    "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/6cafe81c393c8e9d0fc2059e4a4fed7f5b419144/server/src/errors/SiteError.ts#L25-L30",
+                    "description": "src/errors/SiteError.ts -> SiteErrorObject"
+                },
+                "properties": {
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    }
+                },
+                "required": ["title", "description"]
+            }
+        },
+        "responses": {
+            "BadRequestError400": {
+                "description": "Error thrown when a request is malformed or otherwise an invalid shape. This can also be thrown when the 'origin' header of a request is present and not in the allowed origins whitelist (CORS error).",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "externalDocs": {
+                                "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/e3b79447659626c75c4cf712ee9d43b21e23b94f/server/src/errors/CorsError.ts",
+                                "description": "src/errors/CorsError.ts"
+                            },
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/SiteErrorObject"
+                                }
+                            ],
+                            "properties": {
+                                "additionalData": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "externalDocs": {
+                                            "url": "https://github.com/NachoToast/RimWorldModCatalogue/blob/6cafe81c393c8e9d0fc2059e4a4fed7f5b419144/server/src/middleware/validatorErrorHandler.ts#L8-L16",
+                                            "description": "src/middleware/validatorErrorHandler.ts -> ValidationErrorItem[]"
+                                        },
+                                        "properties": {
+                                            "path": {
+                                                "type": "string"
+                                            },
+                                            "message": {
+                                                "type": "string"
+                                            },
+                                            "errorCode": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": ["path", "message"],
+                                        "additionalProperties": false
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "RateLimited429": {
+                "description": "Too many requests, rate limited.",
+                "headers": {
+                    "RateLimit-Limit": {
+                        "required": true,
+                        "description": "Maximum number of requests per time window.",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    "RateLimit-Remaining": {
+                        "required": true,
+                        "description": "Number of requests remaining in this time window.",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    "RateLimit-Reset": {
+                        "required": true,
+                        "description": "Number of seconds until this time window ends.",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    "Retry-After": {
+                        "required": true,
+                        "description": "Length of time window in seconds.",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                }
             }
         },
         "parameters": {
