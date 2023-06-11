@@ -39,6 +39,8 @@ export class WorkshopParser {
      * Some mods require the client to be logged in to view, such as those with explicit content tags.
      *
      * E.g. https://steamcommunity.com/sharedfiles/filedetails/?id=2911258858
+     *
+     * This also returns true for mods that do not exist.
      */
     public getIsInaccessible(): boolean {
         return this._root.querySelector('#message') !== null;
