@@ -3,20 +3,20 @@ import { TypedEmitter } from 'tiny-typed-emitter';
 import { Colours } from '../types/Colours';
 import { ProgressLogger } from './ProgressLogger';
 
+interface ChunkError {
+    key: string;
+    error: unknown;
+}
+
 interface ChunkEmitterEvents<T> {
     /** Emitted data when a chunk has been fetched. */
     chunk: (data: T[]) => void;
 
     /** Emitted when all chunks have been fetched. */
-    done: (errors: FetchError[]) => void;
+    done: (errors: ChunkError[]) => void;
 }
 
 export type ChunkEmitter<T> = TypedEmitter<ChunkEmitterEvents<T>>;
-
-interface FetchError {
-    key: string;
-    error: unknown;
-}
 
 /** Handles making large amounts of asynchronous function calls in chunks. */
 export class MassRequester {
@@ -128,14 +128,14 @@ export class MassRequester {
      * if a call fails, so that it is clear which call resulted in the error.
      * @param {TResolve} failValue The resolved value of calls that fail after exhausting all their attempts.
      * @param {ChunkEmitter<TResolve>} emitter The event emitter to emit completed chunks to.
-     * @returns {Promise<FetchError[]>} Errors collected across all chunks.
+     * @returns {Promise<ChunkError[]>} Errors collected across all chunks.
      *
      * Chunks are processed sequentially, with the function calls within each chunk being awaited in parallel
      * (using {@link Promise.all Promise.all}).
      *
      * After each chunk is processed, all of its resolved values are emitted using the supplied {@link ChunkEmitter}.
      *
-     * All of the chunks' rejected values are collected as an array of {@link FetchError FetchErrors}, this
+     * All of the chunks' rejected values are collected as an array of {@link ChunkError} objects, this
      * is returned after all chunks have been processed.
      */
     private async chunkedFetch<TArgs, TResolve>(
@@ -144,12 +144,12 @@ export class MassRequester {
         keyFn: (args: TArgs) => string,
         failValue: TResolve,
         emitter: ChunkEmitter<TResolve>,
-    ): Promise<FetchError[]> {
+    ): Promise<ChunkError[]> {
         const itemCount = argsArray.length;
         const chunkCount = Math.ceil(itemCount / this._chunkSize);
 
         // errors across all chunks
-        const errors: FetchError[] = [];
+        const errors: ChunkError[] = [];
 
         for (let chunk = 0; chunk < chunkCount; chunk++) {
             const chunkStartIndex = chunk * this._chunkSize;
@@ -244,10 +244,10 @@ export class MassRequester {
 
     /**
      * Logs an array of errors.
-     * @param {FetchError[]} errorArray Array of {@link FetchError} objects.
+     * @param {ChunkError[]} errorArray Array of {@link ChunkError} objects.
      * @param {string} title Title of the error log.
      */
-    public static logErrors(errorArray: FetchError[], title: string): void {
+    public static logErrors(errorArray: ChunkError[], title: string): void {
         if (errorArray.length === 0) return;
 
         console.log(`${Colours.FgRed}${errorArray.length} Errored ${title}:${Colours.Reset}`);
