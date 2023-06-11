@@ -425,7 +425,7 @@
             "SearchChainOptions": {
                 "type": "integer",
                 "enum": [0, 1],
-                "description": "0 for and, 1 for or."
+                "description": "0 for \"and\", 1 for \"or\"."
             }
         },
         "parameters": {
