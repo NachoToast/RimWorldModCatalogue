@@ -55,6 +55,11 @@
             "type": "integer",
             "description": "Time period in hours between automatic updates of the mod database.",
             "default": 6
+        },
+        "smallUpdateIntervalMinutes": {
+            "type": "integer",
+            "description": "Time period in minutes between automatic updates of the oldest mod in the database.",
+            "default": 1
         }
     },
     "additionalProperties": false,

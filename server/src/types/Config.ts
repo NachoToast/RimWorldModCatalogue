@@ -25,6 +25,8 @@ export interface Config {
 
     updateIntervalHours: number;
 
+    smallUpdateIntervalMinutes: number;
+
     // the following values should not be defined in `config.json` as they are automatically generated
     // if provided, they will be overwritten
 

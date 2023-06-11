@@ -17,6 +17,8 @@ export const defaultConfig: Omit<Config, 'mongoURI'> = {
 
     updateIntervalHours: 6,
 
+    smallUpdateIntervalMinutes: 1,
+
     commit: execSync('git rev-parse HEAD').toString().trim(),
 
     startedAt: new Date().toISOString(),
