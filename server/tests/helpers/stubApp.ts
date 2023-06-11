@@ -13,7 +13,7 @@ export function stubApp(
 ): request.SuperTest<request.Test> {
     const app = express();
 
-    const config = { ...mockedConfig, ...partialConfig } as Config;
+    const config: Config = { ...mockedConfig, ...partialConfig };
 
     if (preRouteMiddlewares) {
         for (const middleware of preRouteMiddlewares) {

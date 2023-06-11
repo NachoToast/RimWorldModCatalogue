@@ -48,7 +48,7 @@ export class WorkshopParser {
         return (
             this._root.querySelector('#previewImageMain')?.getAttribute('src') ??
             this._root.querySelector('#previewImage')?.getAttribute('src') ??
-            ''
+            '' // shouldn't ever occur as Steam always puts a fallback thumbnail on the page, but just in case
         );
     }
 
@@ -79,7 +79,7 @@ export class WorkshopParser {
             ?.innerText.replaceAll(',', '')
             .split(/\s/) // split on the space (e.g. "11335 ratings" -> ["11335", "ratings"])
             .at(0);
-        return parseInt(ratingCountString ?? '0');
+        return parseInt(ratingCountString ?? '0'); // mods with 'Not enough ratings' will be 0
     }
 
     public getAuthors(): ModAuthor[] {
@@ -202,10 +202,16 @@ export class WorkshopParser {
     public static parsePageMods(rawData: string): ModId[] {
         const root = parse(rawData);
 
-        const ids = root
-            .querySelectorAll('.workshopItem')
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .map<ModId>((e) => (e.childNodes[1] as any).attributes['data-publishedfileid']);
+        const ids: ModId[] = [];
+
+        for (const element of root.querySelectorAll('.workshopItem')) {
+            const child = element.childNodes.at(1);
+            try {
+                ids.push((child as HTMLElement).attributes['data-publishedfileid']);
+            } catch (error) {
+                //
+            }
+        }
 
         return ids;
     }

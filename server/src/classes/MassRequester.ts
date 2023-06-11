@@ -1,4 +1,4 @@
-import { isAxiosError} from 'axios';
+import { isAxiosError } from 'axios';
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { Colours } from '../types/Colours';
 import { ProgressLogger } from './ProgressLogger';
@@ -67,8 +67,8 @@ export class MassRequester {
     /**
      * Collects all results from a chunk emitter, and returns them once the emitter is done.
      *
-     * It is not recommended to use this method for large amounts of data, as it will store all the data in memory,
-     * which defeats the whole purpose of having an emitter to begin with.
+     * It is not recommended to use this method for large amounts of data, as it will store all the data in memory
+     * simultaneously, which defeats the whole purpose of having an emitter to begin with.
      */
     public static collectAllFromEmitter<T>(emitter: ChunkEmitter<T>): Promise<T[]> {
         return new Promise((resolve) => {
@@ -110,6 +110,7 @@ export class MassRequester {
         } else {
             this.chunkedFetch(fn, argsArray, keyFn, failValue, emitter).then((errors) => {
                 emitter.emit('done', errors);
+                // listeners should be removed by whatever is calling this method, but just in case
                 emitter.removeAllListeners();
             });
         }
@@ -177,7 +178,7 @@ export class MassRequester {
                         .catch((error) => {
                             errors.push({ key: keyFn(args), error });
                             // you may be asking, why have a fail value? why not just not resolve the promise, and have
-                            // promiseArray be appended to on resolve instead of fixed-length?
+                            // promiseArray be appended to on resolve instead of being fixed-length?
                             //
                             // this is because having a fixed-length array preserves the original order of the calls.
                             // we also can't just resolve with a hard-coded fail value (e.g. null, undefined), because
@@ -193,6 +194,7 @@ export class MassRequester {
 
             emitter.emit('chunk', fetchedChunkData);
 
+            // wait between chunks (on all but the last one)
             if (chunk !== chunkCount - 1) {
                 await new Promise((resolve) => setTimeout(resolve, this._timeBetweenChunkFetches));
             }

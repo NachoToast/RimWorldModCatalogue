@@ -20,7 +20,7 @@ describe(WorkshopFetcher.name, () => {
             mockedAxios.get.mockResolvedValueOnce({ data });
             mockedWorkshopParser.parsePageCount.mockReturnValueOnce(123);
 
-            await new WorkshopFetcher(false).fetchNumPages();
+            await new WorkshopFetcher().fetchNumPages();
         });
 
         it('makes a network request', () => {

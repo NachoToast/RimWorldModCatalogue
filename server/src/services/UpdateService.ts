@@ -19,13 +19,13 @@ import { upsertMods } from './ModService';
 
 let model: Collection<UpdateData> | null = null;
 
-export function initializeUpdateService(mongoDb: Db): void {
-    model = mongoDb.collection('meta');
-}
-
 function getModel(): Collection<UpdateData> {
     if (model === null) throw new Error('UpdateService called before being initialized!');
     return model;
+}
+
+export function initializeUpdateService(mongoDb: Db): void {
+    model = mongoDb.collection('meta');
 }
 
 export async function getLastUpdate(): Promise<UpdateData | null> {

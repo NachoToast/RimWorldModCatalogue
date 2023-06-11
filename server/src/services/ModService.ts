@@ -19,14 +19,14 @@ import { ModId } from '../types/shared/Utility';
 
 let model: Collection<Mod> | null = null;
 
-export async function initializeModService(mongoDb: Db): Promise<void> {
-    model = mongoDb.collection('mods');
-    await model.createIndex({ title: 'text' });
-}
-
 function getModel(): Collection<Mod> {
     if (model === null) throw new Error('ModService called before being initialized!');
     return model;
+}
+
+export async function initializeModService(mongoDb: Db): Promise<void> {
+    model = mongoDb.collection('mods');
+    await model.createIndex({ title: 'text' });
 }
 
 export async function getTotalModCount(): Promise<number> {

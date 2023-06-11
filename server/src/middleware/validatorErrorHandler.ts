@@ -4,8 +4,8 @@ import { SiteErrorObject } from '../errors/SiteError';
 import { MiddlewareProvider } from '../types/MiddlewareProvider';
 
 /** Custom error messages for OpenAPI validation errors. */
-export const validatorErrorHandler: MiddlewareProvider =
-    () => (err, _req, res: Response<SiteErrorObject<ValidationErrorItem[]>>, next) => {
+export const validatorErrorHandler: MiddlewareProvider = () => {
+    return (err, _req, res: Response<SiteErrorObject<ValidationErrorItem[]>>, next) => {
         if (err instanceof HttpError) {
             res.status(400).json({
                 title: 'Bad Request',
@@ -14,3 +14,4 @@ export const validatorErrorHandler: MiddlewareProvider =
             });
         } else next(err);
     };
+};

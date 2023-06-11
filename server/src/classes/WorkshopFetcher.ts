@@ -5,15 +5,15 @@ import { ChunkEmitter, MassRequester } from './MassRequester';
 import { WorkshopParser } from './WorkshopParser';
 
 /**
- * Handles fetching of workshop items from the Steam Workshop.
+ * Handles fetching of mods (and pages of mods) from the Steam Workshop.
  *
  * The static {@link fetchMod} method can be used to fetch a single workshop item.
  *
  * The basic lifecycle of a fetcher is:
  * 1. Instantiation
- * 2. {@link fetchNumPages Fetching number of pages}.
- * 3. {@link fetchAllPages Fetching all page data}.
- * 4. {@link fetchAllMods Fetching all item data}.
+ * 2. {@link fetchNumPages Fetching number of pages}
+ * 3. {@link fetchAllPages Fetching all page data}
+ * 4. {@link fetchAllMods Fetching all item data}
  *
  * @example
  * ```ts
@@ -24,7 +24,7 @@ modEmitter.on('chunk', (mods) => {
     console.log(`Fetched ${mods.length} mods!`)
 });
 modEmitter.on('done', (errors) => {
-    console.log(`Finished fetching mods`);
+    console.log('Finished fetching mods');
     console.log(errors);
 })
  * ```
@@ -77,7 +77,7 @@ export class WorkshopFetcher {
     private static readonly _pageUrl: string = 'https://steamcommunity.com/workshop/browse';
     private static readonly _itemUrl: string = 'https://steamcommunity.com/sharedfiles/filedetails';
 
-    /** Requester for making mass network requests to. */
+    /** Requester for making mass network requests with. */
     private readonly _massRequester: MassRequester;
 
     /** Query parameters to send with network requests. */
@@ -129,6 +129,7 @@ export class WorkshopFetcher {
      * themselves contain an array of mod IDs.
      */
     public async fetchAllPages(numPages?: number): Promise<ChunkEmitter<ModId[]>> {
+        // manually fetch the number of pages if 'numPages' isn't passed in
         numPages ??= await this.fetchNumPages();
 
         const argsArray = new Array(numPages).fill(0).map((_, i) => i + 1); // page number starts at 1
@@ -149,6 +150,9 @@ export class WorkshopFetcher {
      * A mod can be `null` if it is not publically visible (e.g. due to to explicit content tags).
      */
     public async fetchAllMods(ids?: ModId[]): Promise<ChunkEmitter<Mod | null>> {
+        // manually fetch all ids from all pages if 'ids' isn't passed in
+        // this does have the downside of requiring the usage of 'collectAllFromEmitter', which is not good for
+        // keeping memory usage constrained, but the alternative is nesting chunk emitters
         ids ??= (await MassRequester.collectAllFromEmitter(await this.fetchAllPages())).flat();
 
         const argsArray = new Array(ids.length).fill(0).map((_, i) => ids![i]);
@@ -166,7 +170,7 @@ export class WorkshopFetcher {
      * @param {number} pageNumber The page number, starts at 1.
      * @returns {Promise<ModId[]>} The mod IDs on the page.
      *
-     * This is not a static method as page contents are dependent on the instance's {@link _params}.
+     * This is not a static method as the page changes based on {@link _params search parameters}.
      */
     private async fetchPage(pageNumber: number): Promise<ModId[]> {
         const { data } = await axios.get<string>(WorkshopFetcher._pageUrl, {

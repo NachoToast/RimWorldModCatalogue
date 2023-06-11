@@ -10,7 +10,6 @@ import { Config, ImportedConfig } from '../types/Config';
  */
 export function loadConfig(): Config {
     /** Config that we will take values from when forming the final globally-used {@link Config} object. */
-    // we use `readFileSync` since it is easier to mock than `require()`
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const importedConfig: ImportedConfig = require('../../config.json');
 
@@ -21,13 +20,21 @@ export function loadConfig(): Config {
         process.exit();
     }
 
+    // special value transformations
+
+    const clientUrls: Config['clientUrls'] = importedConfig.clientUrls
+        ? new Set(importedConfig.clientUrls)
+        : defaultConfig.clientUrls;
+
+    const rateLimitBypassTokens: Config['rateLimitBypassTokens'] = importedConfig.rateLimitBypassTokens
+        ? new Set(importedConfig.rateLimitBypassTokens)
+        : defaultConfig.rateLimitBypassTokens;
+
     return {
         ...defaultConfig,
         ...importedConfig,
         mongoURI: importedConfig.mongoURI,
-        clientUrls: importedConfig.clientUrls ? new Set(importedConfig.clientUrls) : defaultConfig.clientUrls,
-        rateLimitBypassTokens: importedConfig.rateLimitBypassTokens
-            ? new Set(importedConfig.rateLimitBypassTokens)
-            : defaultConfig.rateLimitBypassTokens,
+        clientUrls,
+        rateLimitBypassTokens,
     };
 }

@@ -7,7 +7,7 @@ import { ModSearchOptions } from './types/shared/ModSearchOptions';
 import { WithPagination } from './types/shared/Page';
 import { RootResponse } from './types/shared/RootResponse';
 
-export function applyRoutes(app: Express, config: Config) {
+export function applyRoutes(app: Express, config: Config): void {
     app.get('/', (_req, res) => {
         res.status(200).send(
             'You found the RimWorld Mod Catalogue API!<br />Having a look around? Check out the <a href="/api-docs">API documentation</a>!',
