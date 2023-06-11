@@ -8,7 +8,7 @@
 
 ### Getting Started
 
-_The information in this section is relevant for both parts of the application (client and server)._
+> The information in this section is relevant for both parts of the application (client and server).
 
 1. Installation
     - Setting up your own version of the client/server is not required to contribute, but it is recommended.
