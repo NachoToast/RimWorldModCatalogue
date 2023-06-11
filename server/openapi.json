@@ -59,10 +59,16 @@
                         "$ref": "#/components/parameters/tagsExclude"
                     },
                     {
+                        "$ref": "#/components/parameters/tagsIncludeChain"
+                    },
+                    {
                         "$ref": "#/components/parameters/dlcsInclude"
                     },
                     {
                         "$ref": "#/components/parameters/dlcsExclude"
+                    },
+                    {
+                        "$ref": "#/components/parameters/dlcsIncludeChain"
                     },
                     {
                         "$ref": "#/components/parameters/search"
@@ -415,6 +421,11 @@
                     "dependencyIds",
                     "dependencyNames"
                 ]
+            },
+            "SearchChainOptions": {
+                "type": "integer",
+                "enum": [0, 1],
+                "description": "0 for \"and\", 1 for \"or\"."
             }
         },
         "parameters": {
@@ -491,6 +502,15 @@
                 },
                 "example": 0
             },
+            "tagsIncludeChain": {
+                "in": "query",
+                "name": "tagsIncludeChain",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/SearchChainOptions"
+                },
+                "example": 0
+            },
             "dlcsInclude": {
                 "in": "query",
                 "name": "dlcsInclude",
@@ -506,6 +526,15 @@
                 "required": true,
                 "schema": {
                     "$ref": "#/components/schemas/ModDLCs"
+                },
+                "example": 0
+            },
+            "dlcsIncludeChain": {
+                "in": "query",
+                "name": "dlcsIncludeChain",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/SearchChainOptions"
                 },
                 "example": 0
             },

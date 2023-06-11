@@ -11,7 +11,7 @@ This services handles all interactions with the mods database, such as:
 import { AnyBulkWriteOperation, Collection, Condition, Db, Filter, FindOptions, Sort } from 'mongodb';
 import { Mod } from '../types/shared/Mod';
 import { ModDLCs } from '../types/shared/ModDLCs';
-import { ModSearchOptions } from '../types/shared/ModSearchOptions';
+import { ModSearchOptions, SearchChainOptions } from '../types/shared/ModSearchOptions';
 import { ModSortOptions } from '../types/shared/ModSortOptions';
 import { ModTags } from '../types/shared/ModTags';
 import { WithPagination } from '../types/shared/Page';
@@ -61,17 +61,31 @@ export async function searchMods(searchOptions: ModSearchOptions): Promise<WithP
         sortDirection,
         tagsInclude,
         tagsExclude,
+        tagsIncludeChain,
         dlcsInclude,
         dlcsExclude,
+        dlcsIncludeChain,
         search,
         dependantsOf,
     } = searchOptions;
 
     const dlcFilter: Condition<ModDLCs> = { $bitsAllClear: dlcsExclude };
-    if (dlcsInclude) dlcFilter.$bitsAnySet = dlcsInclude;
+    if (dlcsInclude !== ModDLCs.None) {
+        if (dlcsIncludeChain === SearchChainOptions.And) {
+            dlcFilter.$bitsAllSet = dlcsInclude;
+        } else {
+            dlcFilter.$bitsAnySet = dlcsInclude;
+        }
+    }
 
     const tagFilter: Condition<ModTags> = { $bitsAllClear: tagsExclude };
-    if (tagsInclude) tagFilter.$bitsAnySet = tagsInclude;
+    if (tagsInclude) {
+        if (tagsIncludeChain === SearchChainOptions.And) {
+            tagFilter.$bitsAllSet = tagsInclude;
+        } else {
+            tagFilter.$bitsAnySet = tagsInclude;
+        }
+    }
 
     const filter: Filter<Mod> = { dlcs: dlcFilter, tags: tagFilter };
     const options: FindOptions<Mod> = { limit: perPage, skip: page * perPage };

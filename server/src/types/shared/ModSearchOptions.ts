@@ -4,8 +4,13 @@ import { ModTags } from './ModTags';
 import { PaginationParams } from './Page';
 import { ModId } from './Utility';
 
+export enum SearchChainOptions {
+    And = 0,
+    Or = 1,
+}
+
 /**
- * Include operations are OR chained.
+ * Include operations are OR chained by default.
  *
  * Exclude operations are AND chained, and take priority over include operations.
  *
@@ -22,8 +27,10 @@ export interface ModSearchOptions extends PaginationParams {
     sortDirection: 1 | -1;
     tagsInclude: ModTags;
     tagsExclude: ModTags;
+    tagsIncludeChain: SearchChainOptions;
     dlcsInclude: ModDLCs;
     dlcsExclude: ModDLCs;
+    dlcsIncludeChain: SearchChainOptions;
     /**
      * If provided, sort direction will be based on title relevance instead of the provided sort direction.
      *
