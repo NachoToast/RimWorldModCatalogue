@@ -23,7 +23,7 @@ The RimWorld Mod Catalogue is made up of two parts: the server and the client.
 - The **server** routinely fetches, tags, and stores mods in a database.
 - The **client** is a website that users can use to search for mods, it makes requests to the server.
 
-For more detail information about each part, see their respective folders.
+For more detailed information about each part, see their respective folders.
 
 - [Server](./server/README.md)
 - [Client](./client/README.md)
