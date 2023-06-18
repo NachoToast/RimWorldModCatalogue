@@ -258,6 +258,8 @@ export async function performUpdateSingular(): Promise<void> {
     const oldestUpdatedMod = oldestUpdated.items.at(0);
     if (oldestUpdatedMod === undefined) return;
 
+    console.log(`[${numIndividuallyUpdated + 1}] Fetching ${oldestUpdatedMod.title} (${oldestUpdatedMod._id})`);
+
     const updatedModData = await WorkshopFetcher.fetchMod(oldestUpdatedMod._id);
 
     let operationType: 'Deleted' | 'Updated';

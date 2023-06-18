@@ -45,27 +45,34 @@ async function main() {
 
     // perform background update for oldest updated mod every `smallUpdateInterval` minutes
     const smallUpdateJob = schedule(`*/${config.smallUpdateIntervalMinutes} * * * *`, async () => {
-        const timeout = setTimeout(() => {
-            console.log(`Small update timed out (max ${config.smallUpdateIntervalMinutes} minutes), stopping job`);
+        const handleJobErrorOrTimeout = () => {
             smallUpdateJob.stop();
             setTimeout(() => {
                 // wait 10x as long before restarting job
                 smallUpdateJob.start();
             }, config.smallUpdateIntervalMinutes * 60 * 1_000 * 10);
+        };
+
+        const timeout = setTimeout(() => {
+            console.log(
+                `Small update timed out (max ${config.smallUpdateIntervalMinutes} minutes), stopping job for a while`,
+            );
+            handleJobErrorOrTimeout();
         }, config.smallUpdateIntervalMinutes * 60 * 1_000);
 
         try {
             await performUpdateSingular();
         } catch (error) {
-            console.log('Small updated errored (see error.log for more information)');
+            console.log('Small update errored (see error.log for more information), stopping job for a while');
             if (error instanceof Error) {
                 writeFileSync('error.log', `${error.toString()}\n${error.stack ?? '(No stack)'}`, 'utf-8');
             } else {
                 writeFileSync('error.log', `${error}`, 'utf-8');
             }
+            handleJobErrorOrTimeout();
+        } finally {
+            clearTimeout(timeout);
         }
-
-        clearTimeout(timeout);
     });
 }
 
