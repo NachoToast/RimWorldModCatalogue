@@ -1,9 +1,20 @@
+import { writeFileSync } from 'fs';
 import { schedule } from 'node-cron';
 import { loadConfig } from './loaders/loadConfig';
 import { loadExpress, startApp } from './loaders/loadExpress';
 import { loadMongo } from './loaders/loadMongo';
 import { initializeModService } from './services/ModService';
 import { getLastUpdate, initializeUpdateService, performUpdate, performUpdateSingular } from './services/UpdateService';
+
+process.on('uncaughtException', (error) => {
+    console.log('Uncaught exception:', error);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (error, promise) => {
+    console.log('Unhandled rejection:', promise);
+    console.log('The error was:', error);
+});
 
 async function main() {
     const config = loadConfig();
@@ -37,9 +48,22 @@ async function main() {
         const timeout = setTimeout(() => {
             console.log(`Small update timed out (max ${config.smallUpdateIntervalMinutes} minutes), stopping job`);
             smallUpdateJob.stop();
+            setTimeout(() => {
+                // wait 10x as long before restarting job
+                smallUpdateJob.start();
+            }, config.smallUpdateIntervalMinutes * 60 * 1_000 * 10);
         }, config.smallUpdateIntervalMinutes * 60 * 1_000);
 
-        await performUpdateSingular();
+        try {
+            await performUpdateSingular();
+        } catch (error) {
+            console.log('Small updated errored (see error.log for more information)');
+            if (error instanceof Error) {
+                writeFileSync('error.log', `${error.toString()}\n${error.stack ?? '(No stack)'}`, 'utf-8');
+            } else {
+                writeFileSync('error.log', `${error}`, 'utf-8');
+            }
+        }
 
         clearTimeout(timeout);
     });
