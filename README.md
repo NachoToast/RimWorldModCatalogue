@@ -32,7 +32,7 @@ For more detail information about each part, see their respective folders.
 
 - The RimWorld Mod Catalogue is not a replacement for the Steam workshop. It does not allow users to download, comment, or otherwise interact with mods.
 - Updates to mods on the Steam workshop are not reflected in the RimWorld Mod Catalogue until the server updates them. This is done on a schedule, so there may be a delay between when a mod is updated on the Steam workshop and when it is updated on the RimWorld Mod Catalogue.
-  - Updates to the code of a mod will normally be shown within **1 day**.
+  - Updates to the code of a mod will be shown within *6 hours**.
   - Updates to other aspects of a mod (description, thumbnail, etc.) should normally be shown within **1 week** (this includes deletions).
 - Tagging is done using the keywords in a mods description, so it will not be 100% perfect.
   - There are plans to use machine learning or AI to improve the tagging process in the future.
