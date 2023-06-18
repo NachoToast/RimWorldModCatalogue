@@ -9,6 +9,7 @@ It is designed to be run on a schedule, and will:
 - Update the database metadata with the new timestamp.
 */
 
+import { writeFileSync } from 'fs';
 import { Collection, Db } from 'mongodb';
 import { MassRequester } from '../classes/MassRequester';
 import { WorkshopFetcher } from '../classes/WorkshopFetcher';
@@ -258,25 +259,50 @@ export async function performUpdateSingular(): Promise<void> {
     const oldestUpdatedMod = oldestUpdated.items.at(0);
     if (oldestUpdatedMod === undefined) return;
 
-    console.log(`[${numIndividuallyUpdated + 1}] Fetching ${oldestUpdatedMod.title} (${oldestUpdatedMod._id})`);
+    try {
+        // create a chunk emitter that only has 1 item, this leverages its ability to retry failed requests
+        const updatedModData = (
+            await MassRequester.collectAllFromEmitter(
+                new MassRequester(false, 1, 3, 1_000, 0).createChunkEmitter(
+                    WorkshopFetcher.fetchMod,
+                    [oldestUpdatedMod._id],
+                    (args) => args,
+                    null,
+                ),
+            )
+        )[0];
 
-    const updatedModData = await WorkshopFetcher.fetchMod(oldestUpdatedMod._id);
+        let operationType: 'Deleted' | 'Updated';
 
-    let operationType: 'Deleted' | 'Updated';
+        if (updatedModData === null) {
+            operationType = 'Deleted';
+            await deleteMod(oldestUpdatedMod._id);
+        } else {
+            operationType = 'Updated';
+            await upsertMods([updatedModData]);
+        }
 
-    if (updatedModData === null) {
-        operationType = 'Deleted';
-        await deleteMod(oldestUpdatedMod._id);
-    } else {
-        operationType = 'Updated';
-        await upsertMods([updatedModData]);
+        const timeTaken = Math.floor((Date.now() - startTime) / 1_000);
+
+        console.log(
+            `[${++numIndividuallyUpdated}] ${operationType} ${oldestUpdatedMod.title} (${
+                oldestUpdatedMod._id
+            }) (took ${timeTaken}s)`,
+        );
+    } catch (error) {
+        const output: string[] = [
+            `[${++numIndividuallyUpdated}] ${
+                error instanceof Error ? 'Error' : 'Unknown error'
+            } performing singular background update for ${oldestUpdatedMod.title} (${oldestUpdatedMod._id})`,
+        ];
+        if (error instanceof Error) {
+            output.push(`Name: ${error.name}`);
+            output.push(`Message: ${error.message}`);
+            output.push(`Stack: ${error.stack ?? 'Undefined'}`);
+            output.push(`Cause: ${error.cause ?? 'Undefined'}`);
+        } else {
+            output.push(`${error}`);
+        }
+        writeFileSync('error.log', output.join('\n'), 'utf-8');
     }
-
-    const timeTaken = Math.floor((Date.now() - startTime) / 1_000);
-
-    console.log(
-        `[${++numIndividuallyUpdated}] ${operationType} ${oldestUpdatedMod.title} (${
-            oldestUpdatedMod._id
-        }) (took ${timeTaken}s)`,
-    );
 }

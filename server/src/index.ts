@@ -1,4 +1,3 @@
-import { writeFileSync } from 'fs';
 import { schedule } from 'node-cron';
 import { loadConfig } from './loaders/loadConfig';
 import { loadExpress, startApp } from './loaders/loadExpress';
@@ -45,31 +44,40 @@ async function main() {
 
     // perform background update for oldest updated mod every `smallUpdateInterval` minutes
     const smallUpdateJob = schedule(`*/${config.smallUpdateIntervalMinutes} * * * *`, async () => {
-        const handleJobErrorOrTimeout = () => {
+        const handleJobErrorOrTimeout = <T extends 'timeout' | 'error'>(
+            reason: T,
+            ctx: T extends 'error' ? unknown : null,
+        ) => {
+            if (reason === 'timeout') {
+                console.log(
+                    `Small update timed out (max ${config.smallUpdateIntervalMinutes} minutes), stopping job for ${
+                        config.smallUpdateIntervalMinutes * 10
+                    } minutes`,
+                );
+            } else {
+                console.log(
+                    `Small update errored, stopping job for ${config.smallUpdateIntervalMinutes * 10} minutes`,
+                    ctx,
+                );
+            }
+
             smallUpdateJob.stop();
+
             setTimeout(() => {
                 // wait 10x as long before restarting job
                 smallUpdateJob.start();
             }, config.smallUpdateIntervalMinutes * 60 * 1_000 * 10);
         };
 
-        const timeout = setTimeout(() => {
-            console.log(
-                `Small update timed out (max ${config.smallUpdateIntervalMinutes} minutes), stopping job for a while`,
-            );
-            handleJobErrorOrTimeout();
-        }, config.smallUpdateIntervalMinutes * 60 * 1_000);
+        const timeout = setTimeout(
+            () => handleJobErrorOrTimeout('timeout', null),
+            config.smallUpdateIntervalMinutes * 60 * 1_000,
+        );
 
         try {
             await performUpdateSingular();
         } catch (error) {
-            console.log('Small update errored (see error.log for more information), stopping job for a while');
-            if (error instanceof Error) {
-                writeFileSync('error.log', `${error.toString()}\n${error.stack ?? '(No stack)'}`, 'utf-8');
-            } else {
-                writeFileSync('error.log', `${error}`, 'utf-8');
-            }
-            handleJobErrorOrTimeout();
+            handleJobErrorOrTimeout('error', error);
         } finally {
             clearTimeout(timeout);
         }
