@@ -50,6 +50,10 @@ The RimWorld Mod Catalogue aims to solve this problem by adding tags to mods bas
   <img alt="Jest" src="https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white" />
   </a>
 
+  <a href="https://mozilla.github.io/nunjucks/">
+  <img alt="Nunjucks" src="https://img.shields.io/badge/Nunjucks-1C4913?style=for-the-badge&logo=nunjucks&logoColor=white" />
+  </a>
+
 </div>
 
 ### Limitations
