@@ -12,6 +12,7 @@ export function applyRoutes(app: Express, config: Config): void {
         '/',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         async (req: Request<any, any, any, Partial<ModSearchOptions>>, res: Response<WithPagination<Mod> | object>) => {
+            // FIXME: why is this typed with | object ?
             const mods = await searchMods(req.query);
 
             if (req.accepts('html')) {
