@@ -1,9 +1,7 @@
 # RimWorld Mod Catalogue <!-- omit in toc -->
 
-[![CI (Client)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.client.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.client.yml)
-[![Deploy (Client)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.client.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.client.yml)
-[![CI (Server)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.server.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.server.yml)
-[![Deploy (Server)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.server.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.server.yml)
+[![CI](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.yml)
+[![Deploy](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.yml)
 [![CodeQL](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/codeql-analysis.yml)
 
 ## Table of Contents <!-- omit in toc -->
