@@ -31,6 +31,7 @@ See the [installation guide](./InstallationGuide.md).
 - `mongodb` Stores mod data.
 - `node-cron` Helps with sheduling (routinely updating mod data).
 - `node-html-parser` Parses data from HTML responses.
+- `nunjucks` HTML templating for page rendering.
 - `swagger-ui-express` Provides a UI for viewing the OpenAPI schema (`/api-docs`).
 
 ### Production Build
