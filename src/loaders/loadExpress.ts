@@ -1,5 +1,6 @@
 /* eslint-disable import/no-named-as-default-member */
 import express, { Express } from 'express';
+import nunjucks from 'nunjucks';
 import { serve, setup } from 'swagger-ui-express';
 import { corsMiddleware } from '../middleware/corsMiddleware';
 import { rateLimitingMiddleware } from '../middleware/rateLimitingMiddleware';
@@ -21,7 +22,14 @@ export function loadExpress(config: Config): Express {
 
     app.use('/spec', express.static('openapi.json'));
 
+    app.use('/favicon.ico', express.static('client/favicon.ico'));
+
     app.use(express.json());
+
+    nunjucks.configure('client', {
+        autoescape: true,
+        express: app,
+    });
 
     {
         // pre-route middleware (e.g. validation, authentication)
