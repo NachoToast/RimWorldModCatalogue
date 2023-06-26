@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { Mod } from '../types/shared/Mod';
-import { ModId } from '../types/shared/Utility';
+import { Mod } from '../types/Mod';
+import { ModId } from '../types/Utility';
 import { ChunkEmitter, MassRequester } from './MassRequester';
 import { WorkshopParser } from './WorkshopParser';
 

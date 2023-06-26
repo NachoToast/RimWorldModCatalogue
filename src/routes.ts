@@ -2,10 +2,10 @@ import { Express, Request, Response } from 'express';
 import { getMod, getTotalModCount, searchMods } from './services/ModService';
 import { getLastUpdate } from './services/UpdateService';
 import { Config } from './types/Config';
-import { Mod } from './types/shared/Mod';
-import { ModSearchOptions } from './types/shared/ModSearchOptions';
-import { WithPagination } from './types/shared/Page';
-import { RootResponse } from './types/shared/RootResponse';
+import { Mod } from './types/Mod';
+import { ModSearchOptions } from './types/ModSearchOptions';
+import { WithPagination } from './types/Page';
+import { RootResponse } from './types/RootResponse';
 
 export function applyRoutes(app: Express, config: Config): void {
     app.get(

@@ -9,13 +9,13 @@ This services handles all interactions with the mods database, such as:
 */
 
 import { AnyBulkWriteOperation, Collection, Condition, Db, Filter, FindOptions, Sort } from 'mongodb';
-import { Mod } from '../types/shared/Mod';
-import { ModDLCs } from '../types/shared/ModDLCs';
-import { ModSearchOptions, SearchChainOptions } from '../types/shared/ModSearchOptions';
-import { ModSortOptions } from '../types/shared/ModSortOptions';
-import { ModTags } from '../types/shared/ModTags';
-import { WithPagination } from '../types/shared/Page';
-import { ModId } from '../types/shared/Utility';
+import { Mod } from '../types/Mod';
+import { ModDLCs } from '../types/ModDLCs';
+import { ModSearchOptions, SearchChainOptions } from '../types/ModSearchOptions';
+import { ModSortOptions } from '../types/ModSortOptions';
+import { ModTags } from '../types/ModTags';
+import { WithPagination } from '../types/Page';
+import { ModId } from '../types/Utility';
 
 let model: Collection<Mod> | null = null;
 

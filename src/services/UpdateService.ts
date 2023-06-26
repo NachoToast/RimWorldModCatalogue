@@ -14,12 +14,12 @@ import { Collection, Db } from 'mongodb';
 import { MassRequester } from '../classes/MassRequester';
 import { WorkshopFetcher } from '../classes/WorkshopFetcher';
 import { Colours } from '../types/Colours';
-import { Mod } from '../types/shared/Mod';
-import { ModDLCs } from '../types/shared/ModDLCs';
-import { SearchChainOptions } from '../types/shared/ModSearchOptions';
-import { ModSortOptions } from '../types/shared/ModSortOptions';
-import { ModTags } from '../types/shared/ModTags';
-import { UpdateData } from '../types/shared/UpdateData';
+import { Mod } from '../types/Mod';
+import { ModDLCs } from '../types/ModDLCs';
+import { SearchChainOptions } from '../types/ModSearchOptions';
+import { ModSortOptions } from '../types/ModSortOptions';
+import { ModTags } from '../types/ModTags';
+import { UpdateData } from '../types/UpdateData';
 import { deleteMod, searchMods, upsertMods } from './ModService';
 
 let model: Collection<UpdateData> | null = null;
