@@ -37,7 +37,7 @@
         }
     ],
     "paths": {
-        "/mods": {
+        "/": {
             "get": {
                 "parameters": [
                     {
@@ -107,59 +107,7 @@
                                     "additionalProperties": false,
                                     "required": ["totalItemCount", "items"]
                                 }
-                            }
-                        }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/BadRequestError400"
-                    },
-                    "429": {
-                        "$ref": "#/components/responses/RateLimited429"
-                    }
-                }
-            }
-        },
-        "/mods/{id}": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "name": "id",
-                    "required": true,
-                    "schema": {
-                        "$ref": "#/components/schemas/ModId"
-                    }
-                }
-            ],
-            "get": {
-                "responses": {
-                    "200": {
-                        "description": "The mod with the given ID.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Mod"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/BadRequestError400"
-                    },
-                    "404": {
-                        "description": "The mod with the given ID does not exist."
-                    },
-                    "429": {
-                        "$ref": "#/components/responses/RateLimited429"
-                    }
-                }
-            }
-        },
-        "/": {
-            "get": {
-                "responses": {
-                    "200": {
-                        "description": "Basic welcome message.",
-                        "content": {
+                            },
                             "text/html": {}
                         }
                     },
@@ -237,6 +185,42 @@
                     },
                     "400": {
                         "$ref": "#/components/responses/BadRequestError400"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/RateLimited429"
+                    }
+                }
+            }
+        },
+        "/mods/{id}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "$ref": "#/components/schemas/ModId"
+                    }
+                }
+            ],
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "The mod with the given ID.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Mod"
+                                }
+                            },
+                            "text/html": {}
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestError400"
+                    },
+                    "404": {
+                        "description": "The mod with the given ID does not exist."
                     },
                     "429": {
                         "$ref": "#/components/responses/RateLimited429"
@@ -567,7 +551,7 @@
             "page": {
                 "in": "query",
                 "name": "page",
-                "required": true,
+                "required": false,
                 "schema": {
                     "type": "integer",
                     "externalDocs": {
@@ -582,7 +566,7 @@
             "perPage": {
                 "in": "query",
                 "name": "perPage",
-                "required": true,
+                "required": false,
                 "schema": {
                     "type": "integer",
                     "externalDocs": {
@@ -598,7 +582,7 @@
             "sortBy": {
                 "in": "query",
                 "name": "sortBy",
-                "required": true,
+                "required": false,
                 "schema": {
                     "$ref": "#/components/schemas/ModSortOptions"
                 },
@@ -607,7 +591,7 @@
             "sortDirection": {
                 "in": "query",
                 "name": "sortDirection",
-                "required": true,
+                "required": false,
                 "schema": {
                     "type": "integer",
                     "externalDocs": {
@@ -622,7 +606,7 @@
             "tagsInclude": {
                 "in": "query",
                 "name": "tagsInclude",
-                "required": true,
+                "required": false,
                 "schema": {
                     "$ref": "#/components/schemas/ModTags"
                 },
@@ -631,7 +615,7 @@
             "tagsExclude": {
                 "in": "query",
                 "name": "tagsExclude",
-                "required": true,
+                "required": false,
                 "schema": {
                     "$ref": "#/components/schemas/ModTags"
                 },
@@ -640,7 +624,7 @@
             "tagsIncludeChain": {
                 "in": "query",
                 "name": "tagsIncludeChain",
-                "required": true,
+                "required": false,
                 "schema": {
                     "$ref": "#/components/schemas/SearchChainOptions"
                 },
@@ -649,7 +633,7 @@
             "dlcsInclude": {
                 "in": "query",
                 "name": "dlcsInclude",
-                "required": true,
+                "required": false,
                 "schema": {
                     "$ref": "#/components/schemas/ModDLCs"
                 },
@@ -658,7 +642,7 @@
             "dlcsExclude": {
                 "in": "query",
                 "name": "dlcsExclude",
-                "required": true,
+                "required": false,
                 "schema": {
                     "$ref": "#/components/schemas/ModDLCs"
                 },
@@ -667,7 +651,7 @@
             "dlcsIncludeChain": {
                 "in": "query",
                 "name": "dlcsIncludeChain",
-                "required": true,
+                "required": false,
                 "schema": {
                     "$ref": "#/components/schemas/SearchChainOptions"
                 },

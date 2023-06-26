@@ -8,11 +8,18 @@ import { WithPagination } from './types/shared/Page';
 import { RootResponse } from './types/shared/RootResponse';
 
 export function applyRoutes(app: Express, config: Config): void {
-    app.get('/', (_req, res) => {
-        res.status(200).send(
-            'You found the RimWorld Mod Catalogue API!<br />Having a look around? Check out the <a href="/api-docs">API documentation</a>!',
-        );
-    });
+    app.get(
+        '/',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        async (req: Request<any, any, any, Partial<ModSearchOptions>>, res: Response<WithPagination<Mod> | object>) => {
+            const mods = await searchMods(req.query);
+
+            if (req.accepts('html')) {
+                return res.render('index.html', { mods });
+            }
+            return res.status(200).json(mods);
+        },
+    );
 
     app.post('/', async (_req, res: Response<RootResponse>) => {
         const [totalMods, lastUpdate] = await Promise.all([getTotalModCount(), getLastUpdate()]);
@@ -30,17 +37,14 @@ export function applyRoutes(app: Express, config: Config): void {
         res.status(200).send(req.ip);
     });
 
-    app.get(
-        '/mods',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        async (req: Request<any, any, any, ModSearchOptions>, res: Response<WithPagination<Mod> | object>) => {
-            res.status(200).json(await searchMods(req.query));
-        },
-    );
-
     app.get('/mods/:id', async (req, res: Response<Mod>) => {
         const mod = await getMod(req.params.id);
-        if (mod === null) res.sendStatus(404);
-        else res.status(200).send(mod);
+
+        if (mod === null) {
+            if (req.accepts('html')) return res.render('notFound.html', { id: req.params.id });
+            return res.sendStatus(404);
+        }
+        if (req.accepts('html')) return res.render('mod.html', { mod });
+        return res.status(200).send(mod);
     });
 }
