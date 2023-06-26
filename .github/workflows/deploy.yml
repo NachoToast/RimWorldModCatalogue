@@ -2,16 +2,12 @@ name: Deploy (Server)
 
 on:
     workflow_run:
-        workflows: [CI (Server)]
+        workflows: [CI]
         types: [completed]
         branches: [main]
 
-defaults:
-    run:
-        working-directory: server
-
 concurrency:
-    group: server_deploy
+    group: deploy
     cancel-in-progress: false
 
 jobs:
@@ -28,6 +24,6 @@ jobs:
                   password: ${{ secrets.PASSWORD }}
                   port: ${{ secrets.PORT }}
                   script: |
-                      cd services_v2/RimWorldModCatalogue/server
+                      cd services_v2/RimWorldModCatalogue
                       chmod +x scripts/deploy.sh
                       ./scripts/deploy.sh
