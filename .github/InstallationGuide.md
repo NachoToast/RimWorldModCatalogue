@@ -19,12 +19,20 @@ You will need to manually install the following things on your system and add th
 
 Now you can set up the repository from a terminal:
 
-```sh
-git clone https://github.com/NachoToast/RimWorldModCatalogue.git
-cd RimWorldCatalogue
-pnpm install
-cp config.example.json config.json
-```
+- Windows:
+    ```sh
+    git clone https://github.com/NachoToast/RimWorldModCatalogue.git
+    cd RimWorldModCatalogue
+    pnpm install
+    copy config.example.json config.json
+    ```
+- Linux/MacOS:
+    ```sh
+    git clone https://github.com/NachoToast/RimWorldModCatalogue.git
+    cd RimWorldModCatalogue
+    pnpm install
+    cp config.example.json config.json
+    ```
 
 ## 2. Add MongoDB Integration
 
