@@ -1,5 +1,10 @@
 # Installation Guide <!-- omit in toc -->
 
+- [0. Install Main Dependencies](#0-install-main-dependencies)
+- [1. Setup Repository \& Dependencies](#1-setup-repository--dependencies)
+- [2. Add MongoDB Integration](#2-add-mongodb-integration)
+- [3. Start the Server](#3-start-the-server)
+
 ## 0. Install Main Dependencies
 
 You will need to manually install the following things on your system and add them to your path:
@@ -15,27 +20,15 @@ Now you can set up the repository from a terminal:
 
 ```sh
 git clone https://github.com/NachoToast/RimWorldModCatalogue.git RimWorldModCatalogue
-cd RimWorldCatalogue/client
+cd RimWorldCatalogue/server
 pnpm install
+cp config.example.json config.json
 ```
 
-## 2. Create Symlinks
+## 2. Add MongoDB Integration
 
-The [client types folder](../src/types/) needs to be linked to the [server shared types folder](../../server/src/types/shared/):
+Follow the instructions in the [MongoDB guide](./MongoDBGuide.md) to get a MongoDB cluster set up.
 
-For **Windows**, you will need to run the [linkTypes.bat](../scripts/linkTypes.bat) script as an administrator.
+## 3. Start the Server
 
-> ![image](./images/WindowsRunAsAdministrator.png)
-
-For **MacOS**, **Linux**, and other UNIX-like operating systems, you need to run the [linkTypes.sh](../scripts/linkTypes.sh) script.
-
-> ```sh
-> chmod +x scripts/linkTypes.sh
-> ./scripts/linkTypes.sh
-> ```
-
-## 3. Start the Client
-
-Now you can start the client (and other scripts) using `pnpm start` (or `npm start`).
-
-<sup>[1]</sup>Yes I know Linux is "unix-like" and not "unix", not relevant here.
+Now you can start the server (and other scripts) using `pnpm start` (or `npm start`).

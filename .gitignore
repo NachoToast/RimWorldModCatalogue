@@ -12,3 +12,7 @@ yarn.lock
 build/
 coverage/
 *.log
+
+config.json
+config.*.json
+!config.example.json

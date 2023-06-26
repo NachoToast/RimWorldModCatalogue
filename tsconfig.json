@@ -26,6 +26,12 @@
         —————————————————————————————
         */
         "noFallthroughCasesInSwitch": true,
-        "noImplicitOverride": true
+        "noImplicitOverride": true,
+        "target": "ES2022",
+        "module": "CommonJS",
+        "types": ["node", "jest"],
+        "resolveJsonModule": true,
+        "outDir": "build",
+        "removeComments": true
     }
 }

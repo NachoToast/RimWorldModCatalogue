@@ -1,4 +1,4 @@
-# RimWorld Mod Catalogue
+# RimWorld Mod Catalogue <!-- omit in toc -->
 
 [![CI (Client)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.client.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/node.js.ci.client.yml)
 [![Deploy (Client)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.client.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.client.yml)
@@ -6,7 +6,18 @@
 [![Deploy (Server)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.server.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/deploy.server.yml)
 [![CodeQL](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/NachoToast/RimWorldModCatalogue/actions/workflows/codeql-analysis.yml)
 
+## Table of Contents <!-- omit in toc -->
+
+- [Why was this made?](#why-was-this-made)
+- [Technologies](#technologies)
+- [Limitations](#limitations)
+- [Contributing](#contributing)
+- [Licensing](#licensing)
+
+
 The RimWorld Mod Catalogue is a fullstack application aimed to provide a better mod browsing experience for RimWorld players.
+
+You can find it at [https://rimworld.nachotoast.com](https://rimworld.nachotoast.com).
 
 ### Why was this made?
 
@@ -16,17 +27,31 @@ The Steam workshop tags for RimWorld mods are limited. Despite the large variety
 
 The RimWorld Mod Catalogue aims to solve this problem by adding tags to mods based on keywords in their description, and then allowing users to search for mods using any combination of these tags.
 
-### How does it work?
+### Technologies
 
-The RimWorld Mod Catalogue is made up of two parts: the server and the client.
+<div style="display: flex">
 
-- The **server** routinely fetches, tags, and stores mods in a database.
-- The **client** is a website that users can use to search for mods, it makes requests to the server.
+  <a href="https://nodejs.org/">
+  <img alt="Node.js" src="https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white" />
+  </a>
 
-For more detailed information about each part, see their respective folders.
+  <a href="https://www.typescriptlang.org/">
+  <img alt="Typescript" src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" />
+  </a>
 
-- [Server](./server/README.md)
-- [Client](./client/README.md)
+  <a href="https://expressjs.com/">
+  <img alt="Express.js" src="https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB" />
+  </a>
+
+  <a href="https://www.mongodb.com/">
+  <img alt="MongoDB" src="https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white" />
+  </a>
+
+  <a href="https://jestjs.io/">
+  <img alt="Jest" src="https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white" />
+  </a>
+
+</div>
 
 ### Limitations
 
