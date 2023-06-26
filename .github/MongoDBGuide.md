@@ -35,3 +35,15 @@ For instance, in this example the final URL would be:
 `mongodb+srv://exampleUser:examplePassword@cluster0.vqhbsse.mongodb.net/?retryWrites=true&w=majority`
 
 Now you can paste the URL into `config.json`, done!
+
+Below is an example `config.json` file with this:
+
+```json
+{
+    "$schema": ".github/config-schema.json",
+    "port": 5000,
+    "mongoURI": "mongodb+srv://exampleUser:examplePassword@cluster0.vqhbsse.mongodb.net/?retryWrites=true&w=majority"
+}
+```
+
+[Back to installation guide](./InstallationGuide.md#3-start-the-server)

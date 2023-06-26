@@ -1,5 +1,5 @@
 {
-    "$schema": "./docs/config-schema.json",
+    "$schema": ".github/config-schema.json",
     "port": 5000,
     "mongoURI": "mongodb+srv://..."
 }

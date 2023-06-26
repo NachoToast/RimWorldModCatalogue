@@ -10,6 +10,7 @@
 - [Technologies](#technologies)
 - [Limitations](#limitations)
 - [Contributing](#contributing)
+- [Installing](#installing)
 - [Licensing](#licensing)
 
 
@@ -65,6 +66,11 @@ The RimWorld Mod Catalogue aims to solve this problem by adding tags to mods bas
 ### Contributing
 
 Contributions are always welcome, check out [CONTRIBUTING.md](./.github/CONTRIBUTING.md) to get started.
+
+
+### Installing
+
+If you want to run the RimWorld Mod Catalogue locally, check out the [installation guide](./.github/InstallationGuide.md).
 
 ### Licensing
 
