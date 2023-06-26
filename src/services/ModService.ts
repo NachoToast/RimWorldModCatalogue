@@ -57,21 +57,19 @@ export async function getMod(id: ModId): Promise<Mod | null> {
     return await getModel().findOne({ _id: id });
 }
 
-export async function searchMods(searchOptions: ModSearchOptions): Promise<WithPagination<Mod>> {
-    const {
-        page,
-        perPage,
-        sortBy,
-        sortDirection,
-        tagsInclude,
-        tagsExclude,
-        tagsIncludeChain,
-        dlcsInclude,
-        dlcsExclude,
-        dlcsIncludeChain,
-        search,
-        dependantsOf,
-    } = searchOptions;
+export async function searchMods(searchOptions?: Partial<ModSearchOptions>): Promise<WithPagination<Mod>> {
+    const page = searchOptions?.page ?? 0;
+    const perPage = searchOptions?.perPage ?? 20;
+    const sortBy = searchOptions?.sortBy ?? ModSortOptions.Id;
+    const sortDirection = searchOptions?.sortDirection ?? 1;
+    const tagsInclude = searchOptions?.tagsInclude ?? ModTags.None;
+    const tagsExclude = searchOptions?.tagsExclude ?? ModTags.None;
+    const tagsIncludeChain = searchOptions?.tagsIncludeChain ?? SearchChainOptions.And;
+    const dlcsInclude = searchOptions?.dlcsInclude ?? ModDLCs.None;
+    const dlcsExclude = searchOptions?.dlcsExclude ?? ModDLCs.None;
+    const dlcsIncludeChain = searchOptions?.dlcsIncludeChain ?? SearchChainOptions.And;
+    const search = searchOptions?.search;
+    const dependantsOf = searchOptions?.dependantsOf;
 
     const dlcFilter: Condition<ModDLCs> = { $bitsAllClear: dlcsExclude };
     if (dlcsInclude !== ModDLCs.None) {
@@ -136,7 +134,7 @@ export async function searchMods(searchOptions: ModSearchOptions): Promise<WithP
             break;
     }
 
-    if (sortBy !== ModSortOptions.Id) sort._id = 1;
+    if (sortBy !== ModSortOptions.Id) sort._id = 1; // always do final sort by ID
 
     const [totalItemCount, items] = await Promise.all([
         getModel().countDocuments(filter),
