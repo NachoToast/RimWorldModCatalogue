@@ -31,7 +31,6 @@
         "module": "CommonJS",
         "types": ["node", "jest"],
         "resolveJsonModule": true,
-        "outDir": "build",
-        "removeComments": true
+        "outDir": "build"
     }
 }
