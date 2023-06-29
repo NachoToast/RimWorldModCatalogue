@@ -16,6 +16,15 @@ process.on('unhandledRejection', (error, promise) => {
     console.log('The error was:', error);
 });
 
+process.stdin.on('data', (d) => {
+    const command = d.toString().trim();
+
+    if (command === 'forceupdate') {
+        performUpdate();
+        return;
+    }
+})
+
 /** 
  * Checks if the database has mods in it, and executes a first-time fetch if it doesn't, or if they haven't been
  * updated in more than the configured `updateIntervalHours`.
