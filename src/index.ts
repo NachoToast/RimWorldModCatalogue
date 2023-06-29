@@ -4,6 +4,7 @@ import { loadExpress, startApp } from './loaders/loadExpress';
 import { loadMongo } from './loaders/loadMongo';
 import { initializeModService } from './services/ModService';
 import { getLastUpdate, initializeUpdateService, performUpdate, performUpdateSingular } from './services/UpdateService';
+import { Config } from './types/Config';
 
 process.on('uncaughtException', (error) => {
     console.log('Uncaught exception:', error);
@@ -14,6 +15,25 @@ process.on('unhandledRejection', (error, promise) => {
     console.log('Unhandled rejection:', promise);
     console.log('The error was:', error);
 });
+
+/** 
+ * Checks if the database has mods in it, and executes a first-time fetch if it doesn't, or if they haven't been
+ * updated in more than the configured `updateIntervalHours`.
+ */
+async function conditionalStartupDatabaseCheck(config: Config): Promise<void> {
+    const lastUpdated = await getLastUpdate();
+
+    if (lastUpdated === null) {
+        performUpdate(null);
+    } else {
+        const updatedHoursAgo = Math.floor(
+            (Date.now() - new Date(lastUpdated.timestamp).getTime()) / (1_000 * 60 * 60),
+        );
+        if (updatedHoursAgo >= config.updateIntervalHours) {
+            performUpdate(lastUpdated);
+        }
+    }
+}
 
 async function main() {
     const config = loadConfig();
@@ -27,20 +47,7 @@ async function main() {
     await startApp(app, config.port);
 
     // perform background update every `updateIntervalHours` hours
-    schedule(`0 */${config.updateIntervalHours} * * *`, performUpdate);
-
-    const lastUpdated = await getLastUpdate();
-
-    if (lastUpdated === null) {
-        performUpdate();
-    } else {
-        const updatedHoursAgo = Math.floor(
-            (Date.now() - new Date(lastUpdated.timestamp).getTime()) / (1_000 * 60 * 60),
-        );
-        if (updatedHoursAgo >= config.updateIntervalHours) {
-            performUpdate();
-        }
-    }
+    schedule(`0 */${config.updateIntervalHours} * * *`, () => performUpdate());
 
     // perform background update for oldest updated mod every `smallUpdateInterval` minutes
     const smallUpdateJob = schedule(`*/${config.smallUpdateIntervalMinutes} * * * *`, async () => {
@@ -82,6 +89,8 @@ async function main() {
             clearTimeout(timeout);
         }
     });
+
+    conditionalStartupDatabaseCheck(config);
 }
 
 main();
