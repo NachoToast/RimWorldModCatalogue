@@ -210,7 +210,7 @@ export async function performUpdate(): Promise<void> {
 
     let timestamp = Math.floor(new Date(lastUpdate.timestamp).getTime() / 1_000);
 
-    timestamp -= 24 * 60 * 60 * 1; // 1 day because Steam timestamps are weird sometimes
+    timestamp -= 24 * 60 * 60 * 2; // 2 days because Steam timestamps are weird sometimes
 
     const startTime = Date.now();
     console.log('Starting background mod fetches');
