@@ -196,11 +196,11 @@ async function performBackgroundWorkshopFetch(timestamp: number, mode: 'posted' 
 let isDoingUpdate = false;
 
 /** Performs a background or first-time fetch of workshop mods. */
-export async function performUpdate(): Promise<void> {
+export async function performUpdate(lastUpdate?: UpdateData | null): Promise<void> {
     if (isDoingUpdate) return;
     isDoingUpdate = true;
 
-    const lastUpdate = await getLastUpdate();
+    if (lastUpdate === undefined) lastUpdate = await getLastUpdate();
 
     if (lastUpdate === null) {
         await performInitialWorkshopFetch();
