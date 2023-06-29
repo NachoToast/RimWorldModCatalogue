@@ -14,6 +14,10 @@
     },
     "servers": [
         {
+            "url": "https://rimworld.nachotoast.com",
+            "description": "Production Server"
+        },
+        {
             "url": "http://localhost:{port}",
             "description": "Development Server",
             "variables": {
@@ -30,10 +34,6 @@
                     "default": "5000"
                 }
             }
-        },
-        {
-            "url": "https://rimworldmods.nachotoast.com",
-            "description": "Production Server"
         }
     ],
     "paths": {
