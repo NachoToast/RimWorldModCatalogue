@@ -13,16 +13,15 @@
 - [Installing](#installing)
 - [Licensing](#licensing)
 
-
 The RimWorld Mod Catalogue is a fullstack application aimed to provide a better mod browsing experience for RimWorld players.
 
-You can find it at [https://rimworld.nachotoast.com](https://rimworld.nachotoast.com).
+You can find it at [rimworld.nachotoast.com](https://rimworld.nachotoast.com).
 
 ### Why was this made?
 
 The Steam workshop tags for RimWorld mods are limited. Despite the large variety of mods out there they aren't categorized by their functionality at all.
 
-![image](.github/images/BrowseTagsScreenshot.png)
+![list of Steam tags](.github/images/BrowseTagsScreenshot.png)
 
 The RimWorld Mod Catalogue aims to solve this problem by adding tags to mods based on keywords in their description, and then allowing users to search for mods using any combination of these tags.
 
@@ -64,7 +63,7 @@ The RimWorld Mod Catalogue aims to solve this problem by adding tags to mods bas
   - Deleted mods and updates to other aspects of existing mods (description, thumbnail, etc.) will be shown within **1 week**.
 - Tagging is done using the keywords in a mods description, so it will not be 100% perfect.
   - There are plans to use machine learning or AI to improve the tagging process in the future.
-- Only mods that are publically available on the Steam workshop are included in the catalogue.
+- Only mods that are publicly available on the Steam workshop are included in the catalogue.
 - Only **1.4** mods are included in the catalogue.
 
 ### Contributing
