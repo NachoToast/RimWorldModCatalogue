@@ -41,3 +41,5 @@ Follow the instructions in the [MongoDB guide](./MongoDBGuide.md) to get a Mongo
 ## 3. Start the Server
 
 Now you can start the server (and other scripts) using `pnpm start` (or `npm start`).
+
+For more information about the scripts you can use, see the [script reference](./CONTRIBUTING.md#script-reference).

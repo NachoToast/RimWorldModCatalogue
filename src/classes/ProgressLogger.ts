@@ -25,7 +25,7 @@ export class ProgressLogger {
     private readonly _rows: number;
 
     /** Internal interval tracker, referenced for cleanup. */
-    private _interval: NodeJS.Timer;
+    private _interval: NodeJS.Timeout;
 
     /** Whether to actually write to the console, prevents writes when the output is unchanged. */
     private _dirty = false;
