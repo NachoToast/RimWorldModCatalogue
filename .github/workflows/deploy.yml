@@ -17,7 +17,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Execute remote build process
-              uses: appleboy/ssh-action@v1.0.0
+              uses: appleboy/ssh-action@v1.0.3
               with:
                   host: ${{ secrets.HOST }}
                   username: ${{ secrets.USERNAME }}
